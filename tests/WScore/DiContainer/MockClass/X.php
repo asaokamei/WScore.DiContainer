@@ -41,4 +41,8 @@ class X
     public function noSetter( $c ) {
         $this->setC = $c;
     }
+    
+    public function getPropC() {
+        return $this->propC;
+    }
 }

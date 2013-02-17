@@ -44,19 +44,30 @@ class Forger
         if( !empty( $injectList[ 'construct' ] ) ) {
             /** @var $refConst \ReflectionMethod */
             $refConst = $injectList[ 'reflections' ][ 'construct' ];
-            $refArgs  = $refConst->getParameters();
-            $args     = array();
-            if( !empty( $refArgs ) ) {
-                foreach( $refArgs as $refArg ) {
-                    $name  = $refArg->getName();
-                    $id    = $injectList[ 'construct' ][ $name ];
-                    $value = $container->get( $id );
-                    $args[] = $value;
-                }
-                $refConst->invokeArgs( $object, $args );
-            }
+            $this->injectMethod( $container, $object, $refConst, $injectList[ 'construct' ] );
         }
         return $object;
+    }
+
+    /**
+     * @param \WScore\DiContainer\ContainerInterface $container
+     * @param object $object
+     * @param \ReflectionMethod $refMethod
+     * @param array $list
+     */
+    private function injectMethod( $container, $object, $refMethod, $list )
+    {
+        $refArgs  = $refMethod->getParameters();
+        $args     = array();
+        if( !empty( $refArgs ) ) {
+            foreach( $refArgs as $refArg ) {
+                $name  = $refArg->getName();
+                $id    = $list[ $name ];
+                $value = $container->get( $id );
+                $args[] = $value;
+            }
+            $refMethod->invokeArgs( $object, $args );
+        }
     }
     
     private function getAnalysis( $className ) 

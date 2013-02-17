@@ -37,6 +37,10 @@ class ForgerTest extends \PHPUnit_Framework_TestCase
         $class = $names . 'X';
         $object = $this->forger->forge( $this->container, $class );
         $this->assertEquals( $class, '\\' . get_class( $object ) );
+        $this->assertEquals( $names.'A', $object->a );
+        $this->assertEquals( $names.'B', $object->b );
+        $this->assertEquals( $names.'C', $object->getPropC() );
+        $this->assertEquals( $names.'C', $object->setC );
     }
 }
 
