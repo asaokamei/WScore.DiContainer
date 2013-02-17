@@ -12,9 +12,9 @@ class Forger
     /**
      * @param \WScore\DiContainer\Analyzer $analyzer
      */
-    public function __construct( $analyzer )
+    public function __construct( $analyzer=null )
     {
-        $this->analyzer = $analyzer;
+        if( isset( $analyzer ) ) $this->analyzer = $analyzer;
     }
 
     /**
