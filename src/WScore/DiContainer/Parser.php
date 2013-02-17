@@ -58,6 +58,7 @@ class Parser
     protected function parseParam( $parameter )
     {
         $list = preg_split( '/[\s]+/', $parameter );
+        if( substr( $list[2], 0, 1 ) === '$' ) $list[2] = substr( $list[2], 1 );
         return array(
             'id'  => $list[1],
             'var' => $list[2],

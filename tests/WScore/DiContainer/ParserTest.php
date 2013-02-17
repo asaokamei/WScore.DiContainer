@@ -65,8 +65,8 @@ class ParserTest extends \PHPUnit_Framework_TestCase
         ";
         $return = $this->parser->parse( $comment );
         $this->assertNotEmpty( $return );
-        $this->assertEquals( 'parameterType', $return[ '$var' ] );
-        $this->assertEquals( 'parameterMore', $return[ '$more' ] );
+        $this->assertEquals( 'parameterType', $return[ 'var' ] );
+        $this->assertEquals( 'parameterMore', $return[ 'more' ] );
     }
 
     /**
