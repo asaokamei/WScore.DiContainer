@@ -27,6 +27,7 @@ class Analyzer
         list( $dimProp,  $refProp  ) = $this->property( $refClass );
         list( $dimSet,   $refSet   ) = $this->setter( $refClass );
         $diList     = array(
+            'singleton' => $this->singleton( $refClass ),
             'construct' => $dimConst,
             'setter'    => $dimSet,
             'property'  => $dimProp,
@@ -40,6 +41,17 @@ class Analyzer
         return $diList;
     }
 
+    /**
+     * @param \ReflectionClass $refClass
+     * @return bool
+     */
+    private function singleton( $refClass )
+    {
+        $comment = $refClass->getDocComment();
+        $dimClass = $this->parser->parse( $comment );
+        if( isset( $dimClass[ 'singleton' ] ) && $dimClass[ 'singleton' ] ) return true;
+        return false;
+    }
     /**
      * @param \ReflectionClass $refClass
      * @return array

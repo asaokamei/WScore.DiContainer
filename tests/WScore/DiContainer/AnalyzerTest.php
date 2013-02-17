@@ -34,6 +34,7 @@ class AnalyzerTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals( $names.'B', $return['construct']['$b'] );
         $this->assertEquals( $names.'C', $return['property']['propC'] );
         $this->assertEquals( $names.'C', $return['setter']['setC']['$c'] );
+        $this->assertTrue( $return[ 'singleton' ] );
     }
     function test_ignore_methods_without_inject()
     {
@@ -57,5 +58,6 @@ class AnalyzerTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals( $names.'B', $return['construct']['$b'] );
         $this->assertEquals( $names.'C', $return['property']['propC'] );
         $this->assertEquals( $names.'CC', $return['setter']['setC']['$c'] );
+        $this->assertFalse( $return[ 'singleton' ] );
     }
 }
