@@ -6,6 +6,8 @@ namespace WScore\tests\DiContainer\MockClass;
  */
 class X
 {
+    public $a;
+    public $b;
     /** 
      * @Inject 
      * @var \WScore\tests\DiContainer\MockClass\C 
@@ -21,6 +23,8 @@ class X
      * @param \WScore\tests\DiContainer\MockClass\B $b
      */
     public function __construct( $a, $b ) {        
+        $this->a = $a;
+        $this->b = $b;
     }
 
     /**
