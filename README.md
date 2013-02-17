@@ -4,18 +4,43 @@ WScore.DiContainer
 A simple Dependency Injection Container. 
 
 
-Examples
---------
+Usage
+-----
 
-get an object for a given class name. 
+###creating an instance
 
-    $container = include( 'path/to/scripts/instance.php' );
-    $object    = $container->get( '\name\space\className' );
+use instance scripts
 
-set a service.
+    $container = include( 'WScore.DiContainer/scripts/instance.php' );
+
+
+###setting and retrieving values.
+
+set and retrieve a value.
+
+    $container->set( 'some-id', 'a value' );
+    $value = $container->get( 'some-id' );
+
+set a service object.
 
     $container->set( 'service-this', '\name\space\className' );
-    $object    = $container->get( 'service-this' );
+    $object = $container->get( 'service-this' );
+
+or, simply specify a class name to get an object. 
+
+    $object = $container->get( '\name\space\className2' );
+
+
+DI for Object Construction
+--------------------------
+
+supports dependency injection for construct, setter, and property injection. 
+
+    $object = $container->get( '\name\space\className2', array(
+        'construct' => array( 'argName'   => 'another\class', ),
+        'setter'    => array( 'setMethod' => 'setter\class', ),
+        'property'  => array( 'diProp'    => 'property\class', ),
+    ) );
 
 can set/overwrite options
 
