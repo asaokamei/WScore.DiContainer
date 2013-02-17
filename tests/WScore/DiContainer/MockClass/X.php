@@ -9,8 +9,9 @@ class X
      */
     public $propC;
     
+    /** @var \WScore\tests\DiContainer\MockClass\C  */
     public $setC;
-    
+
     /**
      * @Inject
      * @param \WScore\tests\DiContainer\MockClass\A $a
@@ -24,6 +25,13 @@ class X
      * @param \WScore\tests\DiContainer\MockClass\C $c
      */
     public function setC( $c ) {
+        $this->setC = $c;
+    }
+
+    /**
+     * @param not-a-setter $c
+     */
+    public function noSetter( $c ) {
         $this->setC = $c;
     }
 }

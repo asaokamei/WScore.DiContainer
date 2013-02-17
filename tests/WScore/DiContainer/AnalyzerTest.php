@@ -35,4 +35,13 @@ class AnalyzerTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals( $names.'C', $return['property']['propC'] );
         $this->assertEquals( $names.'C', $return['setter']['setC']['$c'] );
     }
+    function test_ignore_methods_without_inject()
+    {
+        $names = '\WScore\tests\DiContainer\MockClass\\';
+        $class = $names . 'X';
+        $return = $this->analyzer->analyze( $class );
+
+        $this->assertArrayHasKey( 'setter', $return );
+        $this->assertArrayNotHasKey( 'noSetter', $return['setter'] );
+    }
 }
