@@ -1,7 +1,87 @@
 <?php
 namespace WScore\tests\DiContainer;
 
+use \WScore\DiContainer\Parser;
+
 class ParserTest extends \PHPUnit_Framework_TestCase
 {
+    /** @var \WScore\DiContainer\Parser */
+    var $parser;
+
+    public static function setUpBeforeClass() {
+        require( __DIR__ . '/../../../scripts/require.php' );
+    }
+    public function setUp()
+    {
+        $this->parser = new Parser();
+    }
     
+    /**
+     *
+     */
+    function test_parsing_var_returns_only_one_result() {
+        $comment = "
+        /**
+         * This comment should return parameter list.
+         * @Inject
+         * @var  variableType
+         * @var  variableMore
+         */
+        ";
+        $return = $this->parser->parse( $comment );
+        $this->assertNotEmpty( $return );
+        $param = $return[0];
+        $this->assertEquals( 'variableMore', $param[ 'id' ] );
+        $this->assertArrayNotHasKey( 1, $return );
+    }
+
+    /**
+     *
+     */
+    function test_parsing_param() {
+        $comment = "
+        /**
+         * This comment should return parameter list.
+         * @Inject
+         * @param  parameterType  \$var
+         * @param  parameterMore  \$more
+         */
+        ";
+        $return = $this->parser->parse( $comment );
+        $this->assertNotEmpty( $return );
+        $param = $return[0];
+        $this->assertEquals( 'parameterType', $param[ 'id' ] );
+        $this->assertEquals( '$var', $param[ 'var' ] );
+        $param = $return[1];
+        $this->assertEquals( 'parameterMore', $param[ 'id' ] );
+        $this->assertEquals( '$more', $param[ 'var' ] );
+    }
+
+    /**
+     * 
+     */
+    function test_parser_returns_empty_if_no_injection() {
+        $comment = "
+        /**
+         * @noInjection
+         * @param parameter
+         */
+        ";
+        $return = $this->parser->parse( $comment );
+        $this->assertEmpty( $return );
+    }
+
+    /**
+     * 
+     */
+    function test_parser_returns_empty_if_only_injection() {
+        $comment = "
+        /**
+         * @Inject
+         * @no parameter
+         */
+        ";
+        $return = $this->parser->parse( $comment );
+        $this->assertEmpty( $return );
+    }
 }

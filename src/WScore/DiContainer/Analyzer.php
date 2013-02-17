@@ -1,7 +1,7 @@
 <?php
 namespace WScore\DiContainer;
 
-class Analyze
+class Analyzer
 {
     /** @var \WScore\DiContainer\Parser */
     protected $parser;
@@ -20,15 +20,22 @@ class Analyze
      * @param string $className
      * @return array
      */
-    public function lists( $className )
+    public function analyze( $className )
     {
         $refClass   = new \ReflectionClass( $className );
-        $dimConst   = $this->dimConstructor( $refClass );
-        $dimProp    = $this->dimProperty( $refClass );
+        list( $dimConst, $refConst ) = $this->constructor( $refClass );
+        list( $dimProp,  $refProp  ) = $this->property( $refClass );
+        list( $dimSet,   $refSet   ) = $this->setter( $refClass );
         $diList     = array(
             'construct' => $dimConst,
-            'setter'    => array(),
+            'setter'    => $dimSet,
             'property'  => $dimProp,
+            'reflections' => array(
+                'class'     => $refClass,
+                'construct' => $refConst,
+                'setter'    => $refSet,
+                'property'  => $refProp,
+            ),
         );
         return $diList;
     }
@@ -37,12 +44,15 @@ class Analyze
      * @param \ReflectionClass $refClass
      * @return array
      */
-    private function dimConstructor( $refClass )
+    private function constructor( $refClass )
     {
-        if( !$refConst   = $refClass->getConstructor() ) return array();
-        if( !$comments   = $refConst->getDocComment()  ) return array();
-        $injectList = $this->parser->parseDimDoc( $comments );
-        return $injectList;
+        $injectList = array();
+        $refConst   = $refClass->getConstructor();
+        if( $refConst ) {
+            $comments   = $refConst->getDocComment();
+            $injectList = $this->parser->parse( $comments );
+        }
+        return array( $injectList, $refConst );
     }
 
     /**
@@ -52,24 +62,56 @@ class Analyze
      * @param \ReflectionClass $refClass
      * @return array
      */
-    private function dimProperty( $refClass )
+    private function property( $refClass )
     {
         $injectList = array();
-        if( !self::$PROPERTY_INJECTION ) return $injectList;
+        $refObjects = array();
         do {
             if( $properties = $refClass->getProperties() ) {
                 foreach( $properties as $refProp ) {
                     if( isset( $injectList[ $refProp->name ] ) ) continue;
                     if( $comments = $refProp->getDocComment() ) {
-                        if( $info = $this->parser->parseDimDoc( $comments ) ) {
-                            $injectList[ $refProp->name ] = array( end( $info ), $refProp );
+                        if( $info = $this->parser->parse( $comments ) ) {
+                            $injectList[ $refProp->name ] = $info[0]['id'];
+                            $refObjects[ $refProp->name ] = $refProp;
                         }
                     }
                 }
             }
             $refClass = $refClass->getParentClass();
         } while( false !== $refClass );
-        return $injectList;
+        return array( $injectList, $refObjects );
+    }
+
+    /**
+     * get dependency information of properties for a class.
+     * searches all properties in parent classes as well.
+     *
+     * @param \ReflectionClass $refClass
+     * @return array
+     */
+    private function setter( $refClass )
+    {
+        $injectList = array();
+        $refObjects = array();
+        do {
+            if( $methods = $refClass->getMethods() ) {
+                foreach( $methods as $refMethod ) {
+                    if( $refMethod->isConstructor() ) continue;
+                    if( isset( $injectList[ $refMethod->name ] ) ) continue;
+                    if( $comments = $refMethod->getDocComment() ) {
+                        if( $info = $this->parser->parse( $comments ) ) {
+                            foreach( $info as $var => $id ) {
+                                $injectList[$refMethod->name][ $var ] = $id;
+                                $refObjects[$refMethod->name] = $refMethod;
+                            }
+                        }
+                    }
+                }
+            }
+            $refClass = $refClass->getParentClass();
+        } while( false !== $refClass );
+        return array( $injectList, $refObjects );
     }
 
 }

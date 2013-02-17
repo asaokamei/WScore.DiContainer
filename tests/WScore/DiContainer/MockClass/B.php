@@ -1,7 +1,7 @@
 <?php
 namespace WScore\tests\DiContainer\MockClass;
 
-class A
+class B
 {
-    public $name = 'A class';
+    public $name = 'B class';
 }
