@@ -9,6 +9,7 @@ class AllDicTests_Suite
     {
         $suite = new \PHPUnit_Framework_TestSuite( 'all tests for WScore\'s DiContainer' );
         $folder = __DIR__ . '/';
+        $suite->addTestFile( $folder . 'UtilsTest.php' );
         $suite->addTestFile( $folder . 'ParserTest.php' );
         $suite->addTestFile( $folder . 'AnalyzerTest.php' );
         $suite->addTestFile( $folder . 'ForgerTest.php' );

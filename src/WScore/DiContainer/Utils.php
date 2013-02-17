@@ -61,6 +61,12 @@ class Utils
         $normalized = array();
         if( empty( $option ) ) return $normalized;
         if( !is_array( $option ) ) $option = array( $option );
+        if( in_array( 'singleton', $option ) ) {
+            $normalized[ 'singleton' ] = true;
+        }
+        if( !isset( $option[ 'construct' ] ) && !isset( $option[ 'property' ] ) && !isset( $option[ 'setter' ] ) ) {
+            $normalized[ 'construct' ] = Utils::normalizeInjection( $option );
+        }
         if( isset( $option[ 'construct' ] ) ) {
             $normalized[ 'construct' ] = Utils::normalizeInjection( $option[ 'construct' ] );
         }
@@ -69,9 +75,6 @@ class Utils
         }
         if( isset( $option[ 'setter' ] ) ) {
             $normalized[ 'setter' ] = Utils::normalizeInjection( $option[ 'setter' ] );
-        }
-        if( empty( $normalized ) ) {
-            $normalized[ 'construct' ] = Utils::normalizeInjection( $option );
         }
         return $normalized;
     }
@@ -87,19 +90,6 @@ class Utils
         if( empty( $option ) ) return $option;
         if( !is_array( $option ) ) $option = array( $option );
         // check injection info for each key... 
-        foreach( $option as $key => $info )
-        {
-            // info must be an array having 'id' as object id to inject. 
-            if( !is_array( $info ) ) $info = array( 'id' => $info );
-            // convert numeric key to 'id', i.e. consider it as an object id. 
-            foreach( $info as $k => $v ) {
-                if( is_numeric( $k ) ) {
-                    unset( $info[$k] );
-                    $info[ 'id' ] = $v;
-                }
-            }
-            $option[ $key ] = $info;
-        }
         return $option;
     }
     /**

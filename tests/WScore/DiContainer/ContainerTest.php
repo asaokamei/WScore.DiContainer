@@ -31,6 +31,16 @@ class ContainerTest extends \PHPUnit_Framework_TestCase
         $this->forger    = new Forger( $this->analyzer );
         $this->container = new Container( $this->forger );
     }
+    
+    function test_exists()
+    {
+        $names = '\WScore\tests\DiContainer\MockClass\\';
+        $class = $names . 'X';
+        $this->container->set( 'classX', $class );
+        
+        $this->assertTrue( $this->container->exists( 'classX' ) );
+        $this->assertFalse( $this->container->exists( 'classZ' ) );
+    }
 
     function test_set_class()
     {
