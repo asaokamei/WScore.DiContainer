@@ -20,13 +20,14 @@ class Forger
     /**
      * @param \WScore\DiContainer\ContainerInterface $container
      * @param       $className
-     * @param array $option
+     * @param array $injectList
      * @return mixed|void
      */
-    public function forge( $container, $className, $option=array() )
+    public function forge( $container, $className, $injectList=array() )
     {
-        $injectList = $this->getAnalysis( $className );
-        $injectList = Utils::mergeOption( $injectList, $option );
+        if( !$injectList ) {
+            $injectList = $this->analyze( $className );
+        }
         $object = Utils::newInstanceWithoutConstructor( $injectList[ 'reflections' ][ 'class' ] );
         
         // property injection
@@ -77,8 +78,12 @@ class Forger
             $refMethod->invokeArgs( $object, $args );
         }
     }
-    
-    private function getAnalysis( $className ) 
+
+    /**
+     * @param string $className
+     * @return mixed
+     */
+    public function analyze( $className ) 
     {
         return $this->analyzer->analyze( $className );
     }
