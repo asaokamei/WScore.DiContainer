@@ -21,7 +21,7 @@ class Container implements ContainerInterface
     }
 
     public function set( $id, $value, $option = null ) {
-        $this->value[ $id ] = $id;
+        $this->value[ $id ] = $value;
         if( isset( $option ) ) $this->setOption( $id, $option );
     }
 
@@ -37,7 +37,7 @@ class Container implements ContainerInterface
     {
         if( array_key_exists( $id, $this->cached ) ) return $this->cached[ $id ];
         $found = $id;
-        if( array_key_exists( $id, $this->value ) ) $found = $id;
+        if( array_key_exists( $id, $this->value ) ) $found = $this->value[ $id ];
         // check if $found is a closure, or a className to construct.
         if( $found instanceof \Closure ) {
             $found = $found( $this );

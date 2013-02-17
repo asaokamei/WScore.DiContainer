@@ -32,15 +32,27 @@ class ContainerTest extends \PHPUnit_Framework_TestCase
         $this->container = new Container( $this->forger );
     }
 
-    function test_injection_basic_class()
+    function test_set_class()
+    {
+        $names = '\WScore\tests\DiContainer\MockClass\\';
+        $class = $names . 'X';
+        $this->container->set( 'classX', $class );
+        $object = $this->container->get( 'classX' );
+        $this->assertEquals( $class, '\\' . get_class( $object ) );
+        $this->assertEquals( $names.'A', '\\' . get_class( $object->a ) );
+        $this->assertEquals( $names.'B', '\\' . get_class( $object->b ) );
+        $this->assertEquals( $names.'C', '\\' . get_class( $object->getPropC() ) );
+        $this->assertEquals( $names.'C', '\\' . get_class( $object->setC ) );
+    }
+    function test_getting_basic_class()
     {
         $names = '\WScore\tests\DiContainer\MockClass\\';
         $class = $names . 'X';
         $object = $this->container->get( $class );
         $this->assertEquals( $class, '\\' . get_class( $object ) );
-        $this->assertEquals( $names.'A', $object->a );
-        $this->assertEquals( $names.'B', $object->b );
-        $this->assertEquals( $names.'C', $object->getPropC() );
-        $this->assertEquals( $names.'C', $object->setC );
+        $this->assertEquals( $names.'A', '\\' . get_class( $object->a ) );
+        $this->assertEquals( $names.'B', '\\' . get_class( $object->b ) );
+        $this->assertEquals( $names.'C', '\\' . get_class( $object->getPropC() ) );
+        $this->assertEquals( $names.'C', '\\' . get_class( $object->setC ) );
     }
 }
