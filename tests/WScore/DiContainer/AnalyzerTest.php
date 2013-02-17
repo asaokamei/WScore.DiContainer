@@ -44,4 +44,18 @@ class AnalyzerTest extends \PHPUnit_Framework_TestCase
         $this->assertArrayHasKey( 'setter', $return );
         $this->assertArrayNotHasKey( 'noSetter', $return['setter'] );
     }
+
+    function test_analyze_inherited_class()
+    {
+        $names = '\WScore\tests\DiContainer\MockClass\\';
+        $class = $names . 'Y';
+        $return = $this->analyzer->analyze( $class );
+        $this->assertNotEmpty( $return );
+        $this->assertEquals( new \ReflectionClass( $class ), $return[ 'reflections']['class' ] );
+
+        $this->assertEquals( $names.'A', $return['construct']['$a'] );
+        $this->assertEquals( $names.'B', $return['construct']['$b'] );
+        $this->assertEquals( $names.'C', $return['property']['propC'] );
+        $this->assertEquals( $names.'CC', $return['setter']['setC']['$c'] );
+    }
 }

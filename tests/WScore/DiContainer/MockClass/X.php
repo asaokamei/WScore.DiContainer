@@ -1,13 +1,16 @@
 <?php
 namespace WScore\tests\DiContainer\MockClass;
 
+/**
+ * @Singleton
+ */
 class X
 {
     /** 
      * @Inject 
      * @var \WScore\tests\DiContainer\MockClass\C 
      */
-    public $propC;
+    private $propC;
     
     /** @var \WScore\tests\DiContainer\MockClass\C  */
     public $setC;
