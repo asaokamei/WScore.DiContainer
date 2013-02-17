@@ -31,7 +31,19 @@ class ForgerTest extends \PHPUnit_Framework_TestCase
         $this->forger = new Forger( $this->analyzer );
     }
 
-    function test1()
+    function test_injection_inherit_class()
+    {
+        $names = '\WScore\tests\DiContainer\MockClass\\';
+        $class = $names . 'Y';
+        $object = $this->forger->forge( $this->container, $class );
+        $this->assertEquals( $class, '\\' . get_class( $object ) );
+        $this->assertEquals( $names.'A', $object->a );
+        $this->assertEquals( $names.'B', $object->b );
+        $this->assertEquals( $names.'C', $object->getPropC() );
+        $this->assertEquals( $names.'CC', $object->setC );
+    }
+
+    function test_injection_basic_class()
     {
         $names = '\WScore\tests\DiContainer\MockClass\\';
         $class = $names . 'X';

@@ -11,6 +11,7 @@ class AllDicTests_Suite
         $folder = __DIR__ . '/';
         $suite->addTestFile( $folder . 'ParserTest.php' );
         $suite->addTestFile( $folder . 'AnalyzerTest.php' );
+        $suite->addTestFile( $folder . 'ForgerTest.php' );
 
         return $suite;
     }

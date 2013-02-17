@@ -39,12 +39,20 @@ class Forger
                 $refProp->setValue( $object, $value );
             }
         }
+        
         // setter injection
+        if( !empty( $injectList[ 'setter' ] ) ) {
+            foreach( $injectList[ 'setter' ] as $name => $list ) {
+                $refMethod = $injectList['reflections']['setter'][$name];
+                $this->injectMethod( $container, $object, $refMethod, $list );
+            }
+        }
+        
         // constructor injection
         if( !empty( $injectList[ 'construct' ] ) ) {
-            /** @var $refConst \ReflectionMethod */
-            $refConst = $injectList[ 'reflections' ][ 'construct' ];
-            $this->injectMethod( $container, $object, $refConst, $injectList[ 'construct' ] );
+            /** @var $refMethod \ReflectionMethod */
+            $refMethod = $injectList[ 'reflections' ][ 'construct' ];
+            $this->injectMethod( $container, $object, $refMethod, $injectList[ 'construct' ] );
         }
         return $object;
     }
