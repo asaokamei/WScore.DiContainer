@@ -13,8 +13,8 @@ class AnalyzerTest extends \PHPUnit_Framework_TestCase
     var $analyzer;
 
     public static function setUpBeforeClass() {
-        require( __DIR__ . '/../../../scripts/require.php' );
-        require( __DIR__ . '/MockClass/require.php' );
+        require_once( __DIR__ . '/../../../scripts/require.php' );
+        require_once( __DIR__ . '/MockClass/require.php' );
     }
     public function setUp()
     {

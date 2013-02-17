@@ -9,7 +9,7 @@ class ParserTest extends \PHPUnit_Framework_TestCase
     var $parser;
 
     public static function setUpBeforeClass() {
-        require( __DIR__ . '/../../../scripts/require.php' );
+        require_once( __DIR__ . '/../../../scripts/require.php' );
     }
     public function setUp()
     {
