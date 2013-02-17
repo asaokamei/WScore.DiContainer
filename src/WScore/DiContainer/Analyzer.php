@@ -67,16 +67,16 @@ class Analyzer
         $injectList = array();
         $refObjects = array();
         do {
-            if( $properties = $refClass->getProperties() ) {
-                foreach( $properties as $refProp ) {
-                    if( isset( $injectList[ $refProp->name ] ) ) continue;
-                    if( $comments = $refProp->getDocComment() ) {
-                        if( $info = $this->parser->parse( $comments ) ) {
-                            $injectList[ $refProp->name ] = $info[0]['id'];
-                            $refObjects[ $refProp->name ] = $refProp;
-                        }
-                    }
-                }
+            
+            if( !$properties = $refClass->getProperties() ) continue;
+            foreach( $properties as $refProp )
+            {
+                if( isset( $injectList[ $refProp->name ] ) ) continue;
+                if( !$comments = $refProp->getDocComment() ) continue;
+                if( !$info = $this->parser->parse( $comments ) ) continue;
+                
+                $injectList[ $refProp->name ] = $info[0]['id'];
+                $refObjects[ $refProp->name ] = $refProp;
             }
             $refClass = $refClass->getParentClass();
         } while( false !== $refClass );
@@ -95,18 +95,18 @@ class Analyzer
         $injectList = array();
         $refObjects = array();
         do {
-            if( $methods = $refClass->getMethods() ) {
-                foreach( $methods as $refMethod ) {
-                    if( $refMethod->isConstructor() ) continue;
-                    if( isset( $injectList[ $refMethod->name ] ) ) continue;
-                    if( $comments = $refMethod->getDocComment() ) {
-                        if( $info = $this->parser->parse( $comments ) ) {
-                            foreach( $info as $var => $id ) {
-                                $injectList[$refMethod->name][ $var ] = $id;
-                                $refObjects[$refMethod->name] = $refMethod;
-                            }
-                        }
-                    }
+            
+            if( !$methods = $refClass->getMethods() ) continue;
+            foreach( $methods as $refMethod )
+            {
+                if( $refMethod->isConstructor() ) continue;
+                if( isset( $injectList[ $refMethod->name ] ) ) continue;
+                if( !$comments = $refMethod->getDocComment() ) continue;
+                if( !$info = $this->parser->parse( $comments ) ) continue;
+                
+                foreach( $info as $var => $id ) {
+                    $injectList[$refMethod->name][ $var ] = $id;
+                    $refObjects[$refMethod->name] = $refMethod;
                 }
             }
             $refClass = $refClass->getParentClass();
