@@ -16,6 +16,10 @@ class Parser
     public function parse( $comment )
     {
         $injectList = array();
+        if( preg_match( '/@singleton/mi', $comment ) ) {
+            $injectList[ 'singleton' ] = true;
+            return $injectList;
+        }
         if( !preg_match( '/@inject/mi', $comment ) ) return $injectList;
         if( !preg_match_all( "/(@.*)$/mU", $comment, $comments ) ) return $injectList;
         foreach( $comments[1] as $parameter ) 

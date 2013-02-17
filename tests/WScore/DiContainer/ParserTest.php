@@ -16,6 +16,22 @@ class ParserTest extends \PHPUnit_Framework_TestCase
         $this->parser = new Parser();
     }
     
+    function test_singleton_parsing() {
+        $comment = "
+        /**
+         * This comment should return only singleton.
+         * @Singleton
+         * @Inject
+         * @var    variableVar
+         * @param  variableParam
+         */
+        ";
+        $return = $this->parser->parse( $comment );
+        $this->assertNotEmpty( $return );
+        $this->assertTrue( $return[ 'singleton' ] );
+        unset( $return['singleton' ] );
+        $this->assertEmpty( $return );
+    }
     /**
      *
      */
@@ -49,12 +65,8 @@ class ParserTest extends \PHPUnit_Framework_TestCase
         ";
         $return = $this->parser->parse( $comment );
         $this->assertNotEmpty( $return );
-        $param = $return[0];
-        $this->assertEquals( 'parameterType', $param[ 'id' ] );
-        $this->assertEquals( '$var', $param[ 'var' ] );
-        $param = $return[1];
-        $this->assertEquals( 'parameterMore', $param[ 'id' ] );
-        $this->assertEquals( '$more', $param[ 'var' ] );
+        $this->assertEquals( 'parameterType', $return[ '$var' ] );
+        $this->assertEquals( 'parameterMore', $return[ '$more' ] );
     }
 
     /**
