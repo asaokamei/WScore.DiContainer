@@ -90,8 +90,7 @@ class Analyzer
                 $injectList[ $refProp->name ] = $info[0]['id'];
                 $refObjects[ $refProp->name ] = $refProp;
             }
-            $refClass = $refClass->getParentClass();
-        } while( false !== $refClass );
+        } while( false !== ( $refClass = $refClass->getParentClass() ) );
         return array( $injectList, $refObjects );
     }
 
@@ -121,8 +120,7 @@ class Analyzer
                     $refObjects[$refMethod->name] = $refMethod;
                 }
             }
-            $refClass = $refClass->getParentClass();
-        } while( false !== $refClass );
+        } while( false !== ( $refClass = $refClass->getParentClass() ) );
         return array( $injectList, $refObjects );
     }
 

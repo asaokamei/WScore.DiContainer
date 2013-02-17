@@ -22,6 +22,13 @@ class AnalyzerTest extends \PHPUnit_Framework_TestCase
         $this->analyzer = new Analyzer( $this->parser );
     }
 
+    function test_analyze_class_wo_phpDocs()
+    {
+        $names = '\WScore\tests\DiContainer\MockClass\\';
+        $class = $names . 'C';
+        $return = $this->analyzer->analyze( $class );
+        $this->assertNotEmpty( $return );
+    }
     function test_analyze_returns_reflection_class()
     {
         $names = '\WScore\tests\DiContainer\MockClass\\';
