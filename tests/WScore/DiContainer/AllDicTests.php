@@ -12,6 +12,7 @@ class AllDicTests_Suite
         $suite->addTestFile( $folder . 'ParserTest.php' );
         $suite->addTestFile( $folder . 'AnalyzerTest.php' );
         $suite->addTestFile( $folder . 'ForgerTest.php' );
+        $suite->addTestFile( $folder . 'ContainerTest.php' );
 
         return $suite;
     }
