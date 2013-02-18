@@ -11,25 +11,40 @@ Usage
 
 Use instance scripts
 
-    $container = include( 'WScore.DiContainer/scripts/instance.php' );
-
+```php
+$container = include( 'WScore.DiContainer/scripts/instance.php' );
+```
 
 ###Setting and retrieving values.
 
 Set and retrieve a value.
 
-    $container->set( 'some-id', 'a value' );
-    $value = $container->get( 'some-id' );
+```php
+$container->set( 'some-id', 'a value' );
+$value = $container->get( 'some-id' );
+```
 
 Set a service object.
 
-    $container->set( 'service-this', '\name\space\className' );
-    $object = $container->get( 'service-this' );
+```php
+$container->set( 'service-this', '\name\space\className' );
+$object = $container->get( 'service-this' );
+```
 
 Or, simply specify a class name to get an object.
 
-    $object = $container->get( '\name\space\className2' );
+```php
+$object = $container->get( '\name\space\className2' );
+```
 
+###Getting another class
+
+Set another class for a given class.
+
+```php
+$container->set( '\some\class', '\name\space\className' );
+$object = $container->get( '\some\class' ); // it's \name\space\className. 
+```
 
 Auto-Wiring/Discovery
 ---------------------
@@ -71,13 +86,24 @@ class Sample {
 Overwriting DI Option
 ---------------------
 
-supports dependency injection for construct, setter, and property injection. 
+The container can overwrite the dependency of any of the injection types: construct, setter, and property injections.
+Specify the option at get,
 
-    $object = $container->get( 'Sample', array(
-        'construct' => array( 'var'      => 'another\class', ),
-        'setter'    => array( 'setVar3'  => 'setter\class', ),
-        'property'  => array( 'property' => 'property\class', ),
-    ) );
+```php
+$object = $container->get( 'Sample', array(
+    'construct' => array( 'var'      => 'another\class', ),
+    'setter'    => array( 'setVar3'  => 'setter\class', ),
+    'property'  => array( 'property' => 'property\class', ),
+) );
+```
 
+or, use setOption.
 
-
+```php
+$container->setOption( 'Sample', array(
+    'construct' => array( 'var'      => 'another\class', ),
+    'setter'    => array( 'setVar3'  => 'setter\class', ),
+    'property'  => array( 'property' => 'property\class', ),
+) );
+$object = $container->get( 'Sample' );
+```
