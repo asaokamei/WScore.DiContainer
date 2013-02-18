@@ -26,8 +26,8 @@ class ContainerTest extends \PHPUnit_Framework_TestCase
         $class = $names . 'X';
         $this->container->set( 'classX', $class );
         
-        $this->assertTrue( $this->container->exists( 'classX' ) );
-        $this->assertFalse( $this->container->exists( 'classZ' ) );
+        $this->assertTrue( $this->container->has( 'classX' ) );
+        $this->assertFalse( $this->container->has( 'classZ' ) );
     }
 
     function test_set_class()

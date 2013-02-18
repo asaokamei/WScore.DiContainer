@@ -46,7 +46,7 @@ class Container implements ContainerInterface
      * @param string $id
      * @return bool
      */
-    public function exists( $id ) {
+    public function has( $id ) {
         return array_key_exists( $id, $this->value );
     }
 

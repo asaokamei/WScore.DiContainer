@@ -14,7 +14,7 @@ class Container implements ContainerInterface
     {
     }
 
-    public function exists( $id )
+    public function has( $id )
     {
         return true;
     }
