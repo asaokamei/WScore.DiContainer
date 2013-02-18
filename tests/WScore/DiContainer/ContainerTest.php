@@ -8,15 +8,6 @@ use \WScore\DiContainer\Container;
 
 class ContainerTest extends \PHPUnit_Framework_TestCase
 {
-    /** @var \WScore\DiContainer\Parser */
-    var $parser;
-
-    /** @var \WScore\DiContainer\Analyzer */
-    var $analyzer;
-
-    /** @var \WScore\DiContainer\Forger */
-    var $forger;
-
     /** @var \WScore\DiContainer\Container */
     var $container;
 
@@ -26,10 +17,7 @@ class ContainerTest extends \PHPUnit_Framework_TestCase
     }
     public function setUp()
     {
-        $this->parser    = new Parser();
-        $this->analyzer  = new Analyzer( $this->parser );
-        $this->forger    = new Forger( $this->analyzer );
-        $this->container = new Container( $this->forger );
+        $this->container = include( __DIR__ . '/../../../scripts/instance.php' );
     }
     
     function test_exists()
