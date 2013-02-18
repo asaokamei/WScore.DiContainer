@@ -7,69 +7,77 @@ A simple Dependency Injection Container.
 Usage
 -----
 
-###creating an instance
+###Creating an instance
 
-use instance scripts
+Use instance scripts
 
     $container = include( 'WScore.DiContainer/scripts/instance.php' );
 
 
-###setting and retrieving values.
+###Setting and retrieving values.
 
-set and retrieve a value.
+Set and retrieve a value.
 
     $container->set( 'some-id', 'a value' );
     $value = $container->get( 'some-id' );
 
-set a service object.
+Set a service object.
 
     $container->set( 'service-this', '\name\space\className' );
     $object = $container->get( 'service-this' );
 
-or, simply specify a class name to get an object. 
+Or, simply specify a class name to get an object.
 
     $object = $container->get( '\name\space\className2' );
 
 
-DI for Object Construction
---------------------------
+Auto-Wiring/Discovery
+---------------------
 
-supports dependency injection for construct, setter, and property injection. 
+Supports simple auto-wiring or auto-discovery of dependencies using annotations in phpdocs.
+The supported tags are: `@Inject`, `@param`, and `@var`.
 
-    $object = $container->get( '\name\space\className2', array(
-        'construct' => array( 'argName'   => 'another\class', ),
-        'setter'    => array( 'setMethod' => 'setter\class', ),
-        'property'  => array( 'diProp'    => 'property\class', ),
-    ) );
+The @Singleton annotation is also supported.
 
-can set/overwrite options
-
-    ```php
-    #given a class like:
-    class that {
-        function __construct( $a ) {}
-    }
-    
-    #inject classB into $a in the constructor.
-    
-    $container->setOption( 'service-that', array( 'a' => 'classB' ) );
-    $object    = $container->get( 'service-that' );
-    
-    #or
-    $object    = $container->get( 'service-that' array( 'a' => 'classC' ) );
-    ```
-
-
-
-Auto-wiring
------------
-
+Sample PHP class code:
 
 ```php
 /**
- * @Inject
- * @param /some/class $var
+ * @Singleton
  */
-function name( $var ) {}
+class Sample {
+    /**
+     * @Inject
+     * @var /class/class
+     */
+    private $property;
+
+    /**
+     * @Inject
+     * @param /some/class1 $var
+     * @param /some/class2 $var2
+     */
+    function __construct( $var, $var2 ) {}
+
+    /**
+     * @Inject
+     * @param /some/class1 $var3
+     */
+    function setVar3( $var3 ) {}
+}
 ```
+
+
+Overwriting DI Option
+---------------------
+
+supports dependency injection for construct, setter, and property injection. 
+
+    $object = $container->get( 'Sample', array(
+        'construct' => array( 'var'      => 'another\class', ),
+        'setter'    => array( 'setVar3'  => 'setter\class', ),
+        'property'  => array( 'property' => 'property\class', ),
+    ) );
+
+
 
