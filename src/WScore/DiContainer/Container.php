@@ -10,8 +10,6 @@ class Container implements ContainerInterface
     
     private $option = array();
 
-    private $cached = array();
-
     /**
      * @param \WScore\DiContainer\Forger $forger
      */
@@ -35,7 +33,6 @@ class Container implements ContainerInterface
 
     public function get( $id, $option = array() )
     {
-        if( array_key_exists( $id, $this->cached ) ) return $this->cached[ $id ];
         $found = $id;
         if( array_key_exists( $id, $this->value ) ) $found = $this->value[ $id ];
         // check if $found is a closure, or a className to construct.
@@ -51,10 +48,10 @@ class Container implements ContainerInterface
             $inject = $this->forger->analyze( $found );
             $option = Utils::mergeOption( $inject, $option );
             $found  = $this->forger->forge( $this, $found, $option );
-        }
-        // singleton: store found object into cached. 
-        if( array_key_exists( 'singleton', $option ) && $option[ 'singleton' ] ) { 
-            $this->cached[ $id ] = $found; 
+            // singleton: store found object into cached.
+            if( array_key_exists( 'singleton', $option ) && $option[ 'singleton' ] ) {
+                $this->value[ $id ] = $found;
+            }
         }
         return $found;
         
