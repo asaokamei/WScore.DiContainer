@@ -12,7 +12,6 @@ class ContainerTest extends \PHPUnit_Framework_TestCase
     var $container;
 
     public static function setUpBeforeClass() {
-        require_once( __DIR__ . '/../../../scripts/require.php' );
         require_once( __DIR__ . '/MockClass/require.php' );
     }
     public function setUp()
