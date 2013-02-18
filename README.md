@@ -21,14 +21,14 @@ Set and retrieve a value.
 
 ```php
 $container->set( 'some-id', 'a value' );
-$value = $container->get( 'some-id' );
+$value = $container->get( 'some-id' ); // gets a string: "a value".
 ```
 
 Set a service object.
 
 ```php
 $container->set( 'service-this', '\name\space\className' );
-$object = $container->get( 'service-this' );
+$object = $container->get( 'service-this' ); // it's \name\space\className class.
 ```
 
 Or, simply specify a class name to get an object.
@@ -43,7 +43,7 @@ Set another class for a given class.
 
 ```php
 $container->set( '\some\class', '\name\space\className' );
-$object = $container->get( '\some\class' ); // it's \name\space\className. 
+$object = $container->get( '\some\class' ); // it's \name\space\className class.
 ```
 
 Auto-Wiring/Discovery
