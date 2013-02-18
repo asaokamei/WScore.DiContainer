@@ -36,12 +36,12 @@ class Container implements ContainerInterface
      *
      * @param string $id
      * @param array  $option
-     * @param bool   $merge
+     * @param bool   $reset
      * @return void
      */
-    public function setOption( $id, $option, $merge=true ) {
+    public function setOption( $id, $option, $reset=true ) {
         $option = Utils::normalizeInjection( $option );
-        if( $merge && isset( $this->option[ $id ] ) ) {
+        if( !$reset && isset( $this->option[ $id ] ) ) {
             $option = array_merge( $this->option[ $id ], $option );
         }
         $this->option[ $id ] = $option;
