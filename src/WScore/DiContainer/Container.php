@@ -21,11 +21,12 @@ class Container implements ContainerInterface
     /**
      * Sets a service value for the $id.
      *
-     * @param string $id
-     * @param mixed  $value
-     * @param null $option
+     * @param string     $id
+     * @param mixed      $value
+     * @param array|null $option
+     * @return void
      */
-    public function set( $id, $value, $option = null ) {
+    public function set( $id, $value, $option=array() ) {
         $this->value[ $id ] = $value;
         if( isset( $option ) ) $this->setOption( $id, $option );
     }
@@ -35,9 +36,15 @@ class Container implements ContainerInterface
      *
      * @param string $id
      * @param array  $option
+     * @param bool   $merge
+     * @return void
      */
-    public function setOption( $id, $option ) {
-        $this->option[ $id ] = Utils::normalizeInjection( $option );
+    public function setOption( $id, $option, $merge=true ) {
+        $option = Utils::normalizeInjection( $option );
+        if( $merge && isset( $this->option[ $id ] ) ) {
+            $option = array_merge( $this->option[ $id ], $option );
+        }
+        $this->option[ $id ] = $option;
     }
 
     /**
