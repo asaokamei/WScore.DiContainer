@@ -1,4 +1,8 @@
 <?php
+require( __DIR__ . '/../src/WScore/DiContainer/Cache/Interface.php' );
+require( __DIR__ . '/../src/WScore/DiContainer/Cache/Apc.php' );
+require( __DIR__ . '/../src/WScore/DiContainer/Cache/None.php' );
+require( __DIR__ . '/../src/WScore/DiContainer/Cache.php' );
 require( __DIR__ . '/../src/WScore/DiContainer/ContainerInterface.php' );
 require( __DIR__ . '/../src/WScore/DiContainer/Utils.php' );
 require( __DIR__ . '/../src/WScore/DiContainer/Parser.php' );

@@ -19,7 +19,8 @@ class AnalyzerTest extends \PHPUnit_Framework_TestCase
     public function setUp()
     {
         $this->parser = new Parser();
-        $this->analyzer = new Analyzer( $this->parser );
+        $cache = \WScore\DiContainer\Cache::getCache();
+        $this->analyzer = new Analyzer( $this->parser, $cache );
     }
 
     function test_analyze_class_wo_phpDocs()

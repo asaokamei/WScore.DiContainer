@@ -5,13 +5,26 @@ class Analyzer
 {
     /** @var \WScore\DiContainer\Parser */
     protected $parser;
+    
+    /** @var \WScore\DiContainer\Cache_Interface */
+    protected $cache;
 
+    /** @var array  */
+    protected $cachedList = array();
+    
+    protected $cacheId = 'Dim:Analyzed:';
+    
     /**
-     * @param \WScore\DiContainer\Parser $parser
+     * @param \WScore\DiContainer\Parser           $parser
+     * @param \WScore\DiContainer\Cache_Interface  $cache
      */
-    public function __construct( $parser )
+    public function __construct( $parser, $cache=null )
     {
         $this->parser = $parser;
+        if( $cache ) {
+            $this->cache = $cache;
+            $this->cachedList = $cache->fetch( $this->cacheId );
+        }
     }
     
     /**
@@ -22,6 +35,7 @@ class Analyzer
      */
     public function analyze( $className )
     {
+        if( $diList = $this->fetch( $className ) ) return $diList;
         $refClass   = new \ReflectionClass( $className );
         list( $dimConst, $refConst ) = $this->constructor( $refClass );
         list( $dimProp,  $refProp  ) = $this->property( $refClass );
@@ -38,7 +52,30 @@ class Analyzer
                 'property'  => $refProp,
             ),
         );
+        $this->store( $className, $diList );
         return $diList;
+    }
+
+    /**
+     * @param $className
+     * @return bool|array
+     */
+    private function fetch( $className ) {
+        if( $this->cachedList && array_key_exists( $className, $this->cachedList ) ) {
+            return $this->cachedList[ $className ];
+        }
+        return false;
+    }
+
+    /**
+     * @param $className
+     * @param $diList
+     */
+    private function store( $className, $diList ) {
+        if( $this->cache ) {
+            $this->cachedList[ $className ] = $diList;
+            $this->cache->store( $this->cacheId, $this->cachedList );
+        }
     }
 
     /**
