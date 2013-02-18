@@ -19,6 +19,8 @@ class Container implements ContainerInterface
     }
 
     /**
+     * Sets a service value for the $id.
+     *
      * @param string $id
      * @param mixed  $value
      * @param null $option
@@ -29,6 +31,8 @@ class Container implements ContainerInterface
     }
 
     /**
+     * Sets an option for forging an object for the $id service.
+     *
      * @param string $id
      * @param array  $option
      */
@@ -37,6 +41,8 @@ class Container implements ContainerInterface
     }
 
     /**
+     * Checks if a value is set for the $id.
+     *
      * @param string $id
      * @return bool
      */
@@ -45,6 +51,9 @@ class Container implements ContainerInterface
     }
 
     /**
+     * Gets a service for a given $id.
+     * Forges an object if the set value or the $id is a class name.
+     *
      * @param string $id
      * @param array  $option
      * @return mixed|void
