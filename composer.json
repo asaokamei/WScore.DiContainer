@@ -1,0 +1,14 @@
+{
+    "name": "wscore/dicontainer",
+    "description": "Simple DI container with auto-wiring.",
+    "authors": [
+        {
+            "name": "Asao Kamei",
+            "email": "kamei@workspot.jp"
+        }
+    ],
+    "minimum-stability": "dev",
+    "require": {
+
+    }
+}
