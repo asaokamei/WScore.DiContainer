@@ -91,8 +91,9 @@ class Forger
         
         // constructor injection
         /** @var $refMethod \ReflectionMethod */
-        $refMethod = $injectList[ 'reflections' ][ 'construct' ];
-        $this->injectMethod( $container, $object, $refMethod, $injectList[ 'construct' ] );
+        if( $refMethod = $injectList[ 'reflections' ][ 'construct' ] ) {
+            $this->injectMethod( $container, $object, $refMethod, $injectList[ 'construct' ] );
+        }
         return $object;
     }
 
