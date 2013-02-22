@@ -90,11 +90,9 @@ class Forger
         }
         
         // constructor injection
-        if( !empty( $injectList[ 'construct' ] ) ) {
-            /** @var $refMethod \ReflectionMethod */
-            $refMethod = $injectList[ 'reflections' ][ 'construct' ];
-            $this->injectMethod( $container, $object, $refMethod, $injectList[ 'construct' ] );
-        }
+        /** @var $refMethod \ReflectionMethod */
+        $refMethod = $injectList[ 'reflections' ][ 'construct' ];
+        $this->injectMethod( $container, $object, $refMethod, $injectList[ 'construct' ] );
         return $object;
     }
 
@@ -148,8 +146,8 @@ class Forger
                 $value = $container->get( $id );
                 $args[] = $value;
             }
-            $refMethod->invokeArgs( $object, $args );
         }
+        $refMethod->invokeArgs( $object, $args );
     }
 
     /**
