@@ -148,8 +148,8 @@ class Forger
                 $value = $container->get( $id );
                 $args[] = $value;
             }
-            $refMethod->invokeArgs( $object, $args );
         }
+        $refMethod->invokeArgs( $object, $args );
     }
 
     /**
