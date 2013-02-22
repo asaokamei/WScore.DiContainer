@@ -143,8 +143,15 @@ class Forger
         if( !empty( $refArgs ) ) {
             foreach( $refArgs as $refArg ) {
                 $name  = $refArg->getName();
-                $id    = $list[ $name ];
-                $value = $container->get( $id );
+                if( isset( $list[ $name ] ) ) {
+                    $value = $container->get( $list[ $name ] );
+                }
+                elseif( $refArg->isDefaultValueAvailable() ) {
+                    $value = $refArg->getDefaultValue();
+                }
+                else {
+                    $value = null;
+                }
                 $args[] = $value;
             }
         }
