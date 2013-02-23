@@ -14,6 +14,12 @@ class Cache
             self::$useFile = false;
         }
     }
+
+    /**
+     * @param null $location
+     * @return Cache_Interface
+     * @throws \RuntimeException
+     */
     public static function getCache( $location=null )
     {
         $cache = 'None';
