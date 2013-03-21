@@ -1,19 +1,18 @@
 <?php
 namespace WScore\DiContainer;
 
-class Cache_Apc implements Cache_Interface
+class Cache_Array implements Cache_Interface
 {
     // +----------------------------------------------------------------------+
-    //  Caching using APC.
+    //  Caching using simple array. Mostly for testing purpose.
     // +----------------------------------------------------------------------+
+    private $cache = array();
+
     /**
      *
      */
     public function __construct()
     {
-        if( !function_exists( 'apc_store' ) ) {
-            throw new \RuntimeException( 'apc function not available.' );
-        }
     }
 
     /**
@@ -21,7 +20,7 @@ class Cache_Apc implements Cache_Interface
      * @param mixed $value
      */
     public function store( $name, $value ) {
-        apc_store( $name, $value );
+        $this->cache[ $name ] = serialize( $value );
     }
 
     /**
@@ -29,13 +28,12 @@ class Cache_Apc implements Cache_Interface
      * @return mixed
      */
     public function fetch( $name ) {
-        return apc_fetch( $name );
+        return array_key_exists( $name, $this->cache ) ? unserialize( $this->cache[ $name ] ) : false;
     }
     // +----------------------------------------------------------------------+
     /**
      */
     public function clear() {
-        apc_clear_cache( 'opcode' );
-        apc_clear_cache( 'user' );
+        $this->cache = array();
     }
 }
