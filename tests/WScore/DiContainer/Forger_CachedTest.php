@@ -3,10 +3,11 @@ namespace WScore\tests\DiContainer;
 
 use \WScore\DiContainer\Parser;
 use \WScore\DiContainer\Analyzer;
+use \WScore\DiContainer\Cache;
 use \WScore\DiContainer\Forger;
 use \WScore\tests\DiContainer\MockClass\Container;
 
-class ForgerTest extends \PHPUnit_Framework_TestCase
+class Forger_CachedTest extends \PHPUnit_Framework_TestCase
 {
     /** @var \WScore\DiContainer\Parser */
     var $parser;
@@ -28,7 +29,9 @@ class ForgerTest extends \PHPUnit_Framework_TestCase
         $this->parser = new Parser();
         $this->analyzer = new Analyzer( $this->parser );
         $this->container = new Container();
-        $this->forger = new Forger( $this->analyzer );
+        Cache::cacheOn( 'array' );
+        $cache = Cache::getCache();
+        $this->forger = new Forger( $this->analyzer, $cache );
     }
 
     function test_injection_inherit_class()
@@ -53,6 +56,16 @@ class ForgerTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals( $names.'B', $object->b );
         $this->assertEquals( $names.'C', $object->getPropC() );
         $this->assertEquals( $names.'C', $object->setC );
+    }
+
+    function test_cached()
+    {
+        $names = '\WScore\tests\DiContainer\MockClass\\';
+        $class = $names . 'X';
+        $object1 = $this->forger->forge( $this->container, $class );
+        $object2 = $this->forger->forge( $this->container, $class );
+        $this->assertEquals(  $object1, $object2 );
+        $this->assertNotSame( $object1, $object2 );
     }
 }
 
