@@ -47,14 +47,36 @@ class Forger
      */
     private $analyzer;
 
+    /** @var null|\WScore\DiContainer\Cache_Interface */
+    private $cache = null;
     /**
      * @param \WScore\DiContainer\Analyzer $analyzer
+     * @param \WScore\DiContainer\Cache_Interface   $cache
      */
-    public function __construct( $analyzer=null )
+    public function __construct( $analyzer=null, $cache=null )
     {
         if( isset( $analyzer ) ) $this->analyzer = $analyzer;
+        if( isset( $cache    ) ) $this->cache = $cache;
     }
 
+    /**
+     * @param string $className
+     * @return bool|mixed
+     */
+    private function fetch( $className ) {
+        if( isset( $this->cache ) ) {
+            return $this->cache->fetch( $className );
+        }
+        return false;
+    }
+
+    /**
+     * @param string $className
+     * @param mixed  $object
+     */
+    private function store( $className, $object ) {
+        if( isset( $this->cache ) ) $this->cache->store( $className, $object );
+    }
     /**
      * constructs an object of $className.
      *
@@ -65,6 +87,8 @@ class Forger
      */
     public function forge( $container, $className, $option=array() )
     {
+        if( ( $object = $this->fetch( $className ) ) !== false ) return $object;
+
         $injectList = $this->analyze( $className );
         if( $option ) $injectList = Utils::mergeOption( $injectList, $option );
         $object = Utils::newInstanceWithoutConstructor( $injectList[ 'reflections' ][ 'class' ] );
@@ -93,6 +117,7 @@ class Forger
         if( $refMethod = $injectList[ 'reflections' ][ 'construct' ] ) {
             $this->injectMethod( $container, $object, $refMethod, $injectList[ 'construct' ] );
         }
+        $this->store( $className, $object );
         return $object;
     }
 
