@@ -77,7 +77,7 @@ class Container implements ContainerInterface
         }
         elseif( Utils::isClassName( $found ) ) {
             // it's a class. prepare options to construct an object.
-            $option = $this->prepareOption( $id, $found, $option );
+            $option = $this->prepareOption( $id, $option );
             $found  = $this->forger->forge( $this, $found, $option );
             // singleton: store found object into cached.
             if( array_key_exists( 'singleton', $option ) && $option[ 'singleton' ] ) {
@@ -89,19 +89,16 @@ class Container implements ContainerInterface
 
     /**
      * @param string $id
-     * @param string $className
      * @param array  $option
      * @return array
      */
-    private function prepareOption( $id, $className, $option )
+    private function prepareOption( $id, $option )
     {
         $option = Utils::normalizeOption( $option ); // normalize input option
         if( isset( $this->option[$id] ) ) {
             // get pre-set option from $option, and merge it with the given option.
             $option = Utils::mergeOption( $this->option[$id], $option );
         }
-        $inject = $this->forger->analyze( $className );
-        $option = Utils::mergeOption( $inject, $option );
         return $option;
     }
 }
