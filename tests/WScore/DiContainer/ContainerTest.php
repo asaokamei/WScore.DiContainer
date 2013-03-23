@@ -12,6 +12,7 @@ class ContainerTest extends \PHPUnit_Framework_TestCase
     var $container;
 
     public static function setUpBeforeClass() {
+        require_once( __DIR__ . '/../../../scripts/require.php' );
         require_once( __DIR__ . '/MockClass/require.php' );
     }
     public function setUp()
@@ -51,5 +52,46 @@ class ContainerTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals( $names.'B', '\\' . get_class( $object->b ) );
         $this->assertEquals( $names.'C', '\\' . get_class( $object->getPropC() ) );
         $this->assertEquals( $names.'C', '\\' . get_class( $object->setC ) );
+    }
+    
+    function test_singleton_annotation()
+    {
+        $names = '\WScore\tests\DiContainer\MockClass\\';
+        // get non-singleton objects
+        $class = $names . 'A';
+        $object1 = $this->container->get( $class );
+        $object2 = $this->container->get( $class );
+        $this->assertEquals( $class, '\\' . get_class( $object1 ) );
+        $this->assertNotSame( $object1, $object2 );
+        // get singleton
+        $class = $names . 'S';
+        $object1 = $this->container->get( $class );
+        $object2 = $this->container->get( $class );
+        $this->assertEquals( $class, '\\' . get_class( $object1 ) );
+        $this->assertSame( $object1, $object2 );
+    }
+    
+    function test_singleton_option()
+    {
+        $names = '\WScore\tests\DiContainer\MockClass\\';
+        // get non-singleton objects
+        $class = $names . 'A';
+        $object1 = $this->container->get( $class, array( 'singleton' ) );
+        $object2 = $this->container->get( $class );
+        $this->assertEquals( $class, '\\' . get_class( $object1 ) );
+        $this->assertSame( $object1, $object2 );
+        
+    }
+
+    function test_singleton_option2()
+    {
+        $names = '\WScore\tests\DiContainer\MockClass\\';
+        // get non-singleton objects
+        $class = $names . 'A';
+        $object1 = $this->container->get( $class, array( 'singleton' => true ) );
+        $object2 = $this->container->get( $class );
+        $this->assertEquals( $class, '\\' . get_class( $object1 ) );
+        $this->assertSame( $object1, $object2 );
+
     }
 }
