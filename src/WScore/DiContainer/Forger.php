@@ -49,6 +49,10 @@ class Forger
 
     /** @var null|\WScore\DiContainer\Cache_Interface */
     private $cache = null;
+    
+    /** @var bool */
+    public $singleton = false;
+    
     /**
      * @param \WScore\DiContainer\Analyzer $analyzer
      * @param \WScore\DiContainer\Cache_Interface   $cache
@@ -118,6 +122,11 @@ class Forger
             $this->injectMethod( $container, $object, $refMethod, $injectList[ 'construct' ] );
         }
         $this->store( $className, $object );
+        if( isset( $injectList[ 'singleton'] ) && $injectList[ 'singleton' ] ) {
+            $this->singleton = true;
+        } else {
+            $this->singleton = false;
+        }
         return $object;
     }
 

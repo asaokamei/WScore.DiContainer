@@ -80,7 +80,7 @@ class Container implements ContainerInterface
             $option = $this->prepareOption( $id, $option );
             $found  = $this->forger->forge( $this, $found, $option );
             // singleton: store found object into cached.
-            if( array_key_exists( 'singleton', $option ) && $option[ 'singleton' ] ) {
+            if( $this->forger->singleton ) {
                 $this->value[ $id ] = $found;
             }
         }
