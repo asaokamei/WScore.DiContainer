@@ -94,4 +94,31 @@ class ContainerTest extends \PHPUnit_Framework_TestCase
         $this->assertSame( $object1, $object2 );
 
     }
+    
+    function test_nonexistence_id_returns_null()
+    {
+        $name  = 'not exist';
+        $found = $this->container->get( $name );
+        $this->assertEquals( null, $found );
+    }
+    
+    function test_simple_test()
+    {
+        $name  = 'simple text';
+        $value = 'set value';
+        $this->container->set( $name, $value );
+        $found = $this->container->get( $name );
+        $this->assertEquals( $value, $found );
+    }
+    
+    function test_set_closure()
+    {
+        $value = 'set value';
+        $closure = function($c) use( $value ) {
+            return $value;
+        };
+        $this->container->set( 'closure', $closure );
+        $found = $this->container->get( 'closure' );
+        $this->assertEquals( $value, $found );
+    }
 }

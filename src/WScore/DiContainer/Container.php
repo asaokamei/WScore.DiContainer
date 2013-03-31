@@ -10,6 +10,8 @@ class Container implements ContainerInterface
     
     private $option = array();
 
+    private $singleton = array();
+    
     /**
      * @param \WScore\DiContainer\Forger $forger
      */
@@ -67,22 +69,30 @@ class Container implements ContainerInterface
      */
     public function get( $id, $option = array() )
     {
-        $found = $id;
+        if( array_key_exists( $id, $this->singleton ) ) {
+            return $this->singleton[ $id ];  // return singleton value.
+        }
+        $found = null;
+        $check = $id;
         if( array_key_exists( $id, $this->value ) ) {
-            $found = $this->value[ $id ];  // set found value.
+            $found = $check = $this->value[ $id ];  // set found value.
         }
         // check if $found is a closure, or a className to construct.
-        if( $found instanceof \Closure ) {
-            $found = $found( $this );
+        if( $check instanceof \Closure ) {
+            $found = $check( $this );
         }
-        elseif( Utils::isClassName( $found ) ) {
+        elseif( Utils::isClassName( $check ) ) {
             // it's a class. prepare options to construct an object.
             $option = $this->prepareOption( $id, $option );
-            $found  = $this->forger->forge( $this, $found, $option );
-            // singleton: store found object into cached.
+            $found  = $this->forger->forge( $this, $check, $option );
+            // singleton: set singleton option to true.
             if( $this->forger->singleton ) {
-                $this->value[ $id ] = $found;
+                $option[ 'singleton' ] = true;
             }
+        }
+        // singleton: store found object into cached.
+        if( isset( $option[ 'singleton' ] ) && $option[ 'singleton' ] ) {
+            $this->singleton[ $id ] = $found;
         }
         return $found;
     }
