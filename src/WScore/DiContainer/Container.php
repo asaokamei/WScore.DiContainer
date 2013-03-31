@@ -87,8 +87,11 @@ class Container implements ContainerInterface
             $found = $check = $this->value[ $id ];  // set found value.
         }
         // check if $found is a closure, or a className to construct.
-        if( $check instanceof \Closure ) {
-            $found = $check( $this );
+        if( $found && $found instanceof \Closure ) {
+            $found = $found( $this );
+        }
+        elseif( $found && is_object( $found ) ) {
+            // return the found object. 
         }
         elseif( Utils::isClassName( $check ) ) {
             $check = Utils::normalizeClassName( $check );
