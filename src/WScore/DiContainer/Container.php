@@ -34,6 +34,10 @@ class Container implements ContainerInterface
         if( isset( $option ) ) $this->setOption( $id, $option );
     }
 
+    public function singleton( $id, $value, $option=array() ) {
+        $option[ 'singleton' ] = true;
+        $this->set( $id, $value, $option );
+    }
     /**
      * Sets an option for forging an object for the $id service.
      *
