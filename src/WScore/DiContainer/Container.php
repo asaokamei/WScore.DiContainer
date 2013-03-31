@@ -29,6 +29,7 @@ class Container implements ContainerInterface
      * @return void
      */
     public function set( $id, $value, $option=array() ) {
+        $id = Utils::normalizeClassName( $id );
         $this->value[ $id ] = $value;
         if( isset( $option ) ) $this->setOption( $id, $option );
     }
@@ -41,7 +42,9 @@ class Container implements ContainerInterface
      * @param bool   $reset
      * @return void
      */
-    public function setOption( $id, $option, $reset=true ) {
+    public function setOption( $id, $option, $reset=true ) 
+    {
+        $id = Utils::normalizeClassName( $id );
         $option = Utils::normalizeInjection( $option );
         if( !$reset && isset( $this->option[ $id ] ) ) {
             $option = array_merge( $this->option[ $id ], $option );
@@ -56,6 +59,7 @@ class Container implements ContainerInterface
      * @return bool
      */
     public function has( $id ) {
+        $id = Utils::normalizeClassName( $id );
         return array_key_exists( $id, $this->value );
     }
 
@@ -69,6 +73,7 @@ class Container implements ContainerInterface
      */
     public function get( $id, $option = array() )
     {
+        $id = Utils::normalizeClassName( $id );
         if( array_key_exists( $id, $this->singleton ) ) {
             return $this->singleton[ $id ];  // return singleton value.
         }
@@ -82,6 +87,7 @@ class Container implements ContainerInterface
             $found = $check( $this );
         }
         elseif( Utils::isClassName( $check ) ) {
+            $check = Utils::normalizeClassName( $check );
             // it's a class. prepare options to construct an object.
             $option = $this->prepareOption( $id, $option );
             $found  = $this->forger->forge( $this, $check, $option );
