@@ -23,6 +23,19 @@ class Utils
     }
 
     /**
+     * normalizes class name starting with back-slash namespace. 
+     * 
+     * @param $name
+     * @return string
+     */
+    public static function normalizeClassName( $name ) {
+        if( self::isClassName( $name ) && substr( $name, 0, 1 ) === '\\' ) {
+            $name = substr( $name, 1 );
+        }
+        return $name;
+    }
+
+    /**
      * Creates a new instance of a class without calling its constructor
      * This method from:
      * https://github.com/mnapoli/PHP-DI/blob/master/src/DI/Container.php
