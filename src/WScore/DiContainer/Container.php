@@ -28,13 +28,22 @@ class Container implements ContainerInterface
      * @param array|null $option
      * @return void
      */
-    public function set( $id, $value, $option=array() ) {
+    public function set( $id, $value, $option=array() ) 
+    {
         $id = Utils::normalizeClassName( $id );
         $this->value[ $id ] = $value;
         if( isset( $option ) ) $this->setOption( $id, $option );
     }
 
-    public function singleton( $id, $value, $option=array() ) {
+    /**
+     * sets a service value as singleton for $id. 
+     * 
+     * @param       $id
+     * @param       $value
+     * @param array $option
+     */
+    public function singleton( $id, $value, $option=array() ) 
+    {
         $option[ 'singleton' ] = true;
         $this->set( $id, $value, $option );
     }
@@ -62,7 +71,8 @@ class Container implements ContainerInterface
      * @param string $id
      * @return bool
      */
-    public function has( $id ) {
+    public function has( $id ) 
+    {
         $id = Utils::normalizeClassName( $id );
         return array_key_exists( $id, $this->value );
     }
@@ -81,8 +91,9 @@ class Container implements ContainerInterface
         if( array_key_exists( $id, $this->singleton ) ) {
             return $this->singleton[ $id ];  // return singleton value.
         }
-        $found = null;
-        $check = $id;
+        $found  = null;
+        $check  = $id;
+        $option = $this->prepareOption( $id, $option );
         if( array_key_exists( $id, $this->value ) ) {
             $found = $check = $this->value[ $id ];  // set found value.
         }
@@ -94,9 +105,9 @@ class Container implements ContainerInterface
             // return the found object. 
         }
         elseif( Utils::isClassName( $check ) ) {
-            $check = Utils::normalizeClassName( $check );
+
             // it's a class. prepare options to construct an object.
-            $option = $this->prepareOption( $id, $option );
+            $check  = Utils::normalizeClassName( $check );
             $found  = $this->forger->forge( $this, $check, $option );
             // singleton: set singleton option to true.
             if( $this->forger->singleton ) {

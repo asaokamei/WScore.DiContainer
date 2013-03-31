@@ -143,4 +143,30 @@ class ContainerTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals( $class, get_class( $object1 ) );
         $this->assertSame( $object1, $object2 );
     }
+    
+    function test_singleton_method()
+    {
+        $names = '\WScore\tests\DiContainer\MockClass\\';
+        // get non-singleton objects
+        $class = $names . 'A';
+        $this->container->singleton( $class, $class );
+        $object1 = $this->container->get( $class );
+        $object2 = $this->container->get( $class );
+        $this->assertEquals( $class, '\\' . get_class( $object1 ) );
+        $this->assertSame( $object1, $object2 );
+
+    }
+    
+    function test_set_object()
+    {
+        $object = new \stdClass();
+        $object->test = 'set object test';
+        $this->container->singleton( 'single', $object );
+        $object1 = $this->container->get( 'single' );
+        $object2 = $this->container->get( 'single' );
+        $this->assertEquals( 'stdClass', get_class( $object1 ) );
+        $this->assertSame( $object,  $object1 );
+        $this->assertSame( $object1, $object2 );
+
+    }
 }
