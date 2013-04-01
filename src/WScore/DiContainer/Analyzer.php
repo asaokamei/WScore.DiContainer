@@ -1,22 +1,31 @@
 <?php
 namespace WScore\DiContainer;
 
-class Analyzer
+class Analyzer implements \Serializable
 {
     /** @var \WScore\DiContainer\Parser */
     protected $parser;
     
     /** @var array  */
-    protected $cachedList = array();
-    
-    protected $cacheId = 'Dim:Analyzed:';
-    
+    protected $cache = array();
+
     /**
      * @param \WScore\DiContainer\Parser           $parser
      */
     public function __construct( $parser )
     {
         $this->parser = $parser;
+    }
+
+    private function fetch( $className ) {
+        if( array_key_exists( $className, $this->cache ) ) {
+            return $this->cache[ $className ];
+        }
+        return false;
+    }
+
+    private function store( $className, $diList ) {
+        $this->cache[ $className ] = $diList;
     }
     
     /**
@@ -27,6 +36,8 @@ class Analyzer
      */
     public function analyze( $className )
     {
+        if( false !== $diList = $this->fetch( $className ) ) return $diList;
+
         $refClass   = new \ReflectionClass( $className );
         list( $dimConst, $refConst ) = $this->constructor( $refClass );
         list( $dimProp,  $refProp  ) = $this->property( $refClass );
@@ -43,6 +54,7 @@ class Analyzer
                 'property'  => $refProp,
             ),
         );
+        $this->store( $className, $diList );
         return $diList;
     }
 
@@ -128,5 +140,36 @@ class Analyzer
         } while( false !== ( $refClass = $refClass->getParentClass() ) );
         return array( $injectList, $refObjects );
     }
+
+    // +----------------------------------------------------------------------+
+    /**
+     * String representation of object
+     * @link http://php.net/manual/en/serializable.serialize.php
+     * @return string the string representation of the object or null
+     */
+    public function serialize()
+    {
+        $data = array();
+        $list = get_object_vars( $this );
+        foreach( $list as $var => $val ) {
+            if( $var !== 'cache' ) $data[ $var ] = $val;
+        }
+        return serialize( $data );
+    }
+
+    /**
+     * Constructs the object
+     * @link http://php.net/manual/en/serializable.unserialize.php
+     * @param string $serialized   The string representation of the object.
+     * @return mixed the original value unserialized.
+     */
+    public function unserialize( $serialized )
+    {
+        $info = unserialize( $serialized );
+        foreach( $info as $var => $val ) {
+            $this->$var = $val;
+        }
+    }
+    // +----------------------------------------------------------------------+
 
 }
