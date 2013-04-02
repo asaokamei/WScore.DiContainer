@@ -121,7 +121,9 @@ class Forger
         if( $refMethod = $injectList[ 'reflections' ][ 'construct' ] ) {
             $this->injectMethod( $container, $object, $refMethod, $injectList[ 'construct' ] );
         }
-        $this->store( $className, $object );
+        if( isset( $injectList[ 'cacheable'] ) && $injectList[ 'cacheable' ] ) {
+            $this->store( $className, $object );
+        }
         if( isset( $injectList[ 'singleton'] ) && $injectList[ 'singleton' ] ) {
             $this->singleton = true;
         } else {
