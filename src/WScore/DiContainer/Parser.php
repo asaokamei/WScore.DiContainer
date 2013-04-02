@@ -20,6 +20,10 @@ class Parser
             $injectList[ 'singleton' ] = true;
             return $injectList;
         }
+        if( preg_match( '/@cacheable/mi', $comment ) ) {
+            $injectList[ 'cacheable' ] = true;
+            return $injectList;
+        }
         if( !preg_match( '/@inject/mi', $comment ) ) return $injectList;
         if( !preg_match_all( "/(@.*)$/mU", $comment, $comments ) ) return $injectList;
         foreach( $comments[1] as $parameter ) 
