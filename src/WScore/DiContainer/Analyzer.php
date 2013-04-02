@@ -42,8 +42,8 @@ class Analyzer implements \Serializable
         list( $dimConst, $refConst ) = $this->constructor( $refClass );
         list( $dimProp,  $refProp  ) = $this->property( $refClass );
         list( $dimSet,   $refSet   ) = $this->setter( $refClass );
-        $diList     = array(
-            'singleton' => $this->singleton( $refClass ),
+        $diList = $this->getClassAnnotation( $refClass );
+        $diList = array_merge( $diList, array(
             'construct' => $dimConst,
             'setter'    => $dimSet,
             'property'  => $dimProp,
@@ -53,22 +53,33 @@ class Analyzer implements \Serializable
                 'setter'    => $refSet,
                 'property'  => $refProp,
             ),
-        );
+        ) );
         $this->store( $className, $diList );
         return $diList;
     }
 
     /**
      * @param \ReflectionClass $refClass
-     * @return bool
+     * @return array
      */
-    private function singleton( $refClass )
+    private function getClassAnnotation( $refClass )
     {
         $comment = $refClass->getDocComment();
         $dimClass = $this->parser->parse( $comment );
-        if( isset( $dimClass[ 'singleton' ] ) && $dimClass[ 'singleton' ] ) return true;
-        return false;
+        $diList = array();
+        if( isset( $dimClass[ 'singleton' ] ) && $dimClass[ 'singleton' ] ) {
+            $diList[ 'singleton' ] = true;
+        } else {
+            $diList[ 'singleton' ] = false;
+        }
+        if( isset( $dimClass[ 'cacheable' ] ) && $dimClass[ 'cacheable' ] ) {
+            $diList[ 'cacheable' ] = true;
+        } else {
+            $diList[ 'cacheable' ] = false;
+        }
+        return $diList;
     }
+
     /**
      * @param \ReflectionClass $refClass
      * @return array
