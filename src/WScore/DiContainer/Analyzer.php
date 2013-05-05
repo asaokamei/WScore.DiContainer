@@ -1,30 +1,58 @@
 <?php
 namespace WScore\DiContainer;
 
+use \WScore\DiContainer\Cache_Interface;
+
 class Analyzer implements \Serializable
 {
     /** @var \WScore\DiContainer\Parser */
     protected $parser;
     
-    /** @var array  */
+    /** @var array|Cache_Interface  */
     protected $cache = array();
 
     /**
      * @param \WScore\DiContainer\Parser           $parser
+     * @param Cache_Interface                      $cache
      */
-    public function __construct( $parser )
+    public function __construct( $parser, $cache=null )
     {
         $this->parser = $parser;
+        if( $cache ) $this->cache = $cache;
     }
 
+    /**
+     * @param string $className
+     * @return string
+     */
+    private function normalize( $className ) {
+        return 'DimAnalyzer-' . str_replace( '\\', '-', $className );
+    }
+
+    /**
+     * @param string $className
+     * @return bool|mixed
+     */
     private function fetch( $className ) {
-        if( array_key_exists( $className, $this->cache ) ) {
-            return $this->cache[ $className ];
+        $name = $this->normalize( $className );
+        if( $this->cache instanceof Cache_Interface ) {
+            return $this->cache->fetch( $name );
+        }
+        if( array_key_exists( $name, $this->cache ) ) {
+            return $this->cache[ $name ];
         }
         return false;
     }
 
+    /**
+     * @param string $className
+     * @param mixed $diList
+     */
     private function store( $className, $diList ) {
+        if( $this->cache instanceof Cache_Interface ) {
+            $name = $this->normalize( $className );
+            return $this->cache->store( $name, $diList );
+        }
         $this->cache[ $className ] = $diList;
     }
     

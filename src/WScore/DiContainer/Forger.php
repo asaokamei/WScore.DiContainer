@@ -65,11 +65,19 @@ class Forger
 
     /**
      * @param string $className
+     * @return string
+     */
+    private function normalize( $className ) {
+        return 'DimForger-' . str_replace( '\\', '-', $className );
+    }
+    
+    /**
+     * @param string $className
      * @return bool|mixed
      */
     private function fetch( $className ) {
         if( isset( $this->cache ) ) {
-            return $this->cache->fetch( $className );
+            return $this->cache->fetch( $this->normalize( $className ) );
         }
         return false;
     }
@@ -79,8 +87,9 @@ class Forger
      * @param mixed  $object
      */
     private function store( $className, $object ) {
-        if( isset( $this->cache ) ) $this->cache->store( $className, $object );
+        if( isset( $this->cache ) ) $this->cache->store( $this->normalize( $className ), $object );
     }
+    
     /**
      * constructs an object of $className.
      *
