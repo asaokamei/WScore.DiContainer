@@ -182,13 +182,13 @@ class Analyzer implements \Serializable
     private function analyzeMethod( $refMethod )
     {
         // no phpDocs comments. 
-        if( !$refMethod ) return null;
-        if( !$comments = $refMethod->getDocComment() ) return null;
+        if( !$refMethod ) return array();
+        if( !$comments = $refMethod->getDocComment() ) return array();
         // no injection info. 
-        if( !$info = $this->parser->parse( $comments ) ) return null;
+        if( !$info = $this->parser->parse( $comments ) ) return array();
         // get argument list. 
         $refArgs  = $refMethod->getParameters();
-        if( empty( $refArgs ) ) return null;
+        if( empty( $refArgs ) ) return array();
         
         //get inject list. 
         $injectList = array();
