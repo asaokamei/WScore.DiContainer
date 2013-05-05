@@ -51,7 +51,8 @@ class Analyzer implements \Serializable
     private function store( $className, $diList ) {
         if( $this->cache instanceof Cache_Interface ) {
             $name = $this->normalize( $className );
-            return $this->cache->store( $name, $diList );
+            $this->cache->store( $name, $diList );
+            return;
         }
         $this->cache[ $className ] = $diList;
     }
@@ -66,21 +67,15 @@ class Analyzer implements \Serializable
     {
         if( false !== $diList = $this->fetch( $className ) ) return $diList;
 
-        $refClass   = new \ReflectionClass( $className );
-        list( $dimConst, $refConst ) = $this->constructor( $refClass );
-        list( $dimProp,  $refProp  ) = $this->property( $refClass );
-        list( $dimSet,   $refSet   ) = $this->setter( $refClass );
-        $diList = $this->getClassAnnotation( $refClass );
-        $diList = array_merge( $diList, array(
+        $refClass = new \ReflectionClass( $className );
+        $dimConst = $this->constructor( $refClass );
+        $dimProp  = $this->property( $refClass );
+        $dimSet   = $this->setter( $refClass );
+        $diList   = $this->getClassAnnotation( $refClass );
+        $diList   = array_merge( $diList, array(
             'construct' => $dimConst,
             'setter'    => $dimSet,
             'property'  => $dimProp,
-            'reflections' => array(
-                'class'     => $refClass,
-                'construct' => $refConst,
-                'setter'    => $refSet,
-                'property'  => $refProp,
-            ),
         ) );
         $this->store( $className, $diList );
         return $diList;
@@ -114,13 +109,8 @@ class Analyzer implements \Serializable
      */
     private function constructor( $refClass )
     {
-        $injectList = array();
         $refConst   = $refClass->getConstructor();
-        if( $refConst ) {
-            $comments   = $refConst->getDocComment();
-            $injectList = $this->parser->parse( $comments );
-        }
-        return array( $injectList, $refConst );
+        return $this->analyzeMethod( $refConst );
     }
 
     /**
@@ -133,21 +123,22 @@ class Analyzer implements \Serializable
     private function property( $refClass )
     {
         $injectList = array();
-        $refObjects = array();
+        // loop for all parent classes. 
         do {
-            
+            // get all properties. ignore if no properties found. 
             if( !$properties = $refClass->getProperties() ) continue;
+            // loop for all properties. 
             foreach( $properties as $refProp )
             {
+                // ignore property if already found as @Inject
                 if( isset( $injectList[ $refProp->name ] ) ) continue;
                 if( !$comments = $refProp->getDocComment() ) continue;
                 if( !$info = $this->parser->parse( $comments ) ) continue;
                 
                 $injectList[ $refProp->name ] = $info[0]['id'];
-                $refObjects[ $refProp->name ] = $refProp;
             }
         } while( false !== ( $refClass = $refClass->getParentClass() ) );
-        return array( $injectList, $refObjects );
+        return $injectList;
     }
 
     /**
@@ -160,7 +151,6 @@ class Analyzer implements \Serializable
     private function setter( $refClass )
     {
         $injectList = array();
-        $refObjects = array();
         do {
             
             if( !$methods = $refClass->getMethods() ) continue;
@@ -168,18 +158,57 @@ class Analyzer implements \Serializable
             {
                 if( $refMethod->isConstructor() ) continue;
                 if( isset( $injectList[ $refMethod->name ] ) ) continue;
-                if( !$comments = $refMethod->getDocComment() ) continue;
-                if( !$info = $this->parser->parse( $comments ) ) continue;
-                
-                foreach( $info as $var => $id ) {
-                    $injectList[$refMethod->name][ $var ] = $id;
-                    $refObjects[$refMethod->name] = $refMethod;
+                if( $info = $this->analyzeMethod( $refMethod ) ) {
+                    $injectList[$refMethod->name] = $info;
                 }
             }
         } while( false !== ( $refClass = $refClass->getParentClass() ) );
-        return array( $injectList, $refObjects );
+        return $injectList;
     }
 
+    /**
+     * analyze method for injection.
+     * returns array as
+     * array(
+     *    [ 'name'    => name of argument variable,
+     *      'id'      => id to inject, 
+     *      'default' => default value,
+     *    ],
+     * )
+     * 
+     * @param \ReflectionMethod $refMethod
+     * @return bool|array
+     */
+    private function analyzeMethod( $refMethod )
+    {
+        // no phpDocs comments. 
+        if( !$refMethod ) return null;
+        if( !$comments = $refMethod->getDocComment() ) return null;
+        // no injection info. 
+        if( !$info = $this->parser->parse( $comments ) ) return null;
+        // get argument list. 
+        $refArgs  = $refMethod->getParameters();
+        if( empty( $refArgs ) ) return null;
+        
+        //get inject list. 
+        $injectList = array();
+        foreach( $refArgs as $refArg ) 
+        {
+            $name  = $refArg->getName();
+            if( $refArg->isDefaultValueAvailable() ) {
+                $default = $refArg->getDefaultValue();
+            } else {
+                $default = null;
+            }
+            $id    = isset( $info[ $name ] ) ? $info[ $name ] : null;
+            $injectList[] = array(
+                'name'    => $name,
+                'id'      => $id,
+                'default' => $default,
+            );
+        }
+        return $injectList;
+    }
     // +----------------------------------------------------------------------+
     /**
      * String representation of object

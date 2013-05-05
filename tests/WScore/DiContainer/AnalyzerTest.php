@@ -1,6 +1,7 @@
 <?php
 namespace WScore\tests\DiContainer;
 
+use WScore\DiContainer\Cache;
 use \WScore\DiContainer\Parser;
 use \WScore\DiContainer\Analyzer;
 
@@ -19,7 +20,7 @@ class AnalyzerTest extends \PHPUnit_Framework_TestCase
     public function setUp()
     {
         $this->parser = new Parser();
-        $cache = \WScore\DiContainer\Cache::getCache();
+        $cache = Cache::getCache();
         $this->analyzer = new Analyzer( $this->parser, $cache );
     }
 
@@ -36,13 +37,15 @@ class AnalyzerTest extends \PHPUnit_Framework_TestCase
         $class = $names . 'X';
         $return = $this->analyzer->analyze( $class );
         $this->assertNotEmpty( $return );
-        $this->assertEquals( new \ReflectionClass( $class ), $return[ 'reflections']['class' ] );
         
-        $this->assertEquals( $names.'A', $return['construct']['a'] );
-        $this->assertEquals( $names.'B', $return['construct']['b'] );
+        $this->assertEquals( $names.'A', $return['construct'][0]['id'] );
+        $this->assertEquals( $names.'B', $return['construct'][1]['id'] );
         $this->assertEquals( $names.'C', $return['property']['propC'] );
-        $this->assertEquals( $names.'C', $return['setter']['setC']['c'] );
+        $this->assertEquals( $names.'C', $return['setter']['setC'][0]['id'] );
         $this->assertTrue( $return[ 'singleton' ] );
+        $this->assertEquals( 'a', $return['construct'][0]['name'] );
+        $this->assertEquals( 'b', $return['construct'][1]['name'] );
+        $this->assertEquals( 'c', $return['setter']['setC'][0]['name'] );
     }
     function test_ignore_methods_without_inject()
     {
@@ -60,12 +63,14 @@ class AnalyzerTest extends \PHPUnit_Framework_TestCase
         $class = $names . 'Y';
         $return = $this->analyzer->analyze( $class );
         $this->assertNotEmpty( $return );
-        $this->assertEquals( new \ReflectionClass( $class ), $return[ 'reflections']['class' ] );
 
-        $this->assertEquals( $names.'A', $return['construct']['a'] );
-        $this->assertEquals( $names.'B', $return['construct']['b'] );
+        $this->assertEquals( $names.'A', $return['construct'][0]['id'] );
+        $this->assertEquals( $names.'B', $return['construct'][1]['id'] );
         $this->assertEquals( $names.'C', $return['property']['propC'] );
-        $this->assertEquals( $names.'CC', $return['setter']['setC']['c'] );
+        $this->assertEquals( $names.'CC', $return['setter']['setC'][0]['id'] );
         $this->assertFalse( $return[ 'singleton' ] );
+        $this->assertEquals( 'a', $return['construct'][0]['name'] );
+        $this->assertEquals( 'b', $return['construct'][1]['name'] );
+        $this->assertEquals( 'c', $return['setter']['setC'][0]['name'] );
     }
 }
