@@ -116,7 +116,7 @@ class Forger
         }
         
         // construct object
-        $this->injectMethod( $container, $object, '__construct', $injectList[ 'construct' ] );
+        $this->injectConstruct( $container, $object, $refClass, $injectList[ 'construct' ] );
         
         // cache an object, if cacheable annotation is set. 
         if( isset( $injectList[ 'cacheable'] ) && $injectList[ 'cacheable' ] ) {
@@ -172,6 +172,19 @@ class Forger
         return;
     }
 
+    /**
+     * @param ContainerInterface $container
+     * @param mixed $object
+     * @param \ReflectionClass $refClass
+     * @param array $list
+     */
+    private function injectConstruct( $container, $object, $refClass, $list )
+    {
+        $refConstruct = $refClass->getConstructor();
+        if( !$refConstruct ) return; // no constructor. 
+        $methodName = $refConstruct->getName();
+        $this->injectMethod( $container, $object, $methodName, $list );
+    }
     /**
      * @param string $className
      * @return mixed
