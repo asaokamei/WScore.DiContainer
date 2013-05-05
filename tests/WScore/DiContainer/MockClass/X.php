@@ -12,7 +12,7 @@ class X
      * @Inject 
      * @var \WScore\tests\DiContainer\MockClass\C 
      */
-    private $propC;
+    public $propC;
     
     /** @var \WScore\tests\DiContainer\MockClass\C  */
     public $setC;

@@ -21,20 +21,14 @@ structure of $injectList
 ------------------------
 
       $injectList = array(
-        'construct' => [
-          '$varName' => '$id, ...
-        ],
+        'construct' => [ 'name' => method name, 'id' => id to inject, 'default' => default value, ],
         'setter' => [
-          '$methodName' => [ '$varName' => '$id', ... ], [], ...
+          'methodName' => [ 'name' => method name, 'id' => id to inject, 'default' => default value, ], [], ...,
+          'methodName2'=> [ ... ],
         ],
         'property' => [
           '$propertyName' => '$id', ...
         ],
-        'reflections' => [
-          'class' => $ReflectionClassObject,
-          'construct' => $ReflectionConstructorObject,
-          'setter' => [ '$methodName' => $ReflectionMethodObject, ... ],
-        ]
       )
 
 
@@ -104,32 +98,27 @@ class Forger
 
         $injectList = $this->analyze( $className );
         if( $option ) $injectList = Utils::mergeOption( $injectList, $option );
-        $object = Utils::newInstanceWithoutConstructor( $injectList[ 'reflections' ][ 'class' ] );
+        $refClass = new \ReflectionClass( $className );
+        $object = Utils::newInstanceWithoutConstructor( $refClass );
         
         // property injection
         if( !empty( $injectList[ 'property' ] ) ) {
             foreach( $injectList[ 'property' ] as $propName => $id ) {
-                /** @var $refProp \ReflectionProperty */
-                $refProp = isset( $injectList[ 'reflections' ][ 'property' ][ $propName ] ) ?
-                    $injectList[ 'reflections' ][ 'property' ][ $propName ] : $propName;
-                $this->injectProperty( $container, $object, $refProp, $id );
+                $this->injectProperty( $container, $object, $propName, $id );
             }
         }
         
         // setter injection
         if( !empty( $injectList[ 'setter' ] ) ) {
             foreach( $injectList[ 'setter' ] as $name => $list ) {
-                $refMethod = isset( $injectList['reflections']['setter'][$name] ) ?
-                    $injectList['reflections']['setter'][$name]: $name;
-                $this->injectMethod( $container, $object, $refMethod, $list );
+                $this->injectMethod( $container, $object, $name, $list );
             }
         }
         
-        // constructor injection
-        /** @var $refMethod \ReflectionMethod */
-        if( $refMethod = $injectList[ 'reflections' ][ 'construct' ] ) {
-            $this->injectMethod( $container, $object, $refMethod, $injectList[ 'construct' ] );
-        }
+        // construct object
+        $this->injectMethod( $container, $object, '__construct', $injectList[ 'construct' ] );
+        
+        // cache an object, if cacheable annotation is set. 
         if( isset( $injectList[ 'cacheable'] ) && $injectList[ 'cacheable' ] ) {
             $this->store( $className, $object );
         }
@@ -147,18 +136,13 @@ class Forger
      *
      * @param \WScore\DiContainer\ContainerInterface $container
      * @param object $object
-     * @param \ReflectionProperty $refProp
+     * @param string $propName
      * @param string $id
      */
-    private function injectProperty( $container, $object, $refProp, $id )
+    private function injectProperty( $container, $object, $propName, $id )
     {
-        if( is_string( $refProp ) ) {
-            $object->$refProp = $container->get( $id );
-            return;
-        }
-        $refProp->setAccessible( true );
-        $value = $container->get( $id );
-        $refProp->setValue( $object, $value );
+        $object->$propName = $container->get( $id );
+        return;
     }
 
     /**
@@ -167,39 +151,25 @@ class Forger
      *
      * @param \WScore\DiContainer\ContainerInterface $container
      * @param object $object
-     * @param \ReflectionMethod $refMethod
+     * @param string $methodName
      * @param array $list
      */
-    private function injectMethod( $container, $object, $refMethod, $list )
+    private function injectMethod( $container, $object, $methodName, $list )
     {
-        if( is_string( $refMethod ) ) {
-            $args = array();
-            if( !empty( $list ) ) {
-                foreach( $list as $id ) {
-                    $args[] = $container->get( $id );
-                }
-            }
-            call_user_func_array( array( $object, $refMethod ), $args );
-            return;
+        $args = array();
+        if( !empty( $list ) )
+        foreach( $list as $idx => $info ) {
+            
+            // $idx as number is for injection. 
+            if( !is_numeric( $idx ) ) continue;
+            $name = $info[ 'name' ];
+            // overwrite $id if set in $list. 
+            $id = isset( $list[ $name ] ) ? $list[ $name ] : $info[ 'id' ];
+            $val = $container->get( $id );
+            $args[] = is_null( $val ) ? $info[ 'default' ] : $val ;
         }
-        $refArgs  = $refMethod->getParameters();
-        $args     = array();
-        if( !empty( $refArgs ) ) {
-            foreach( $refArgs as $refArg ) {
-                $name  = $refArg->getName();
-                if( isset( $list[ $name ] ) ) {
-                    $value = $container->get( $list[ $name ] );
-                }
-                elseif( $refArg->isDefaultValueAvailable() ) {
-                    $value = $refArg->getDefaultValue();
-                }
-                else {
-                    $value = null;
-                }
-                $args[] = $value;
-            }
-        }
-        $refMethod->invokeArgs( $object, $args );
+        call_user_func_array( array( $object, $methodName ), $args );
+        return;
     }
 
     /**
