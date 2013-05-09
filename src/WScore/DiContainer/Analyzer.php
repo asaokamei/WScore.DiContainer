@@ -3,7 +3,7 @@ namespace WScore\DiContainer;
 
 use \WScore\DiContainer\Cache_Interface;
 
-class Analyzer implements \Serializable
+class Analyzer
 {
     /** @var \WScore\DiContainer\Parser */
     protected $parser;
@@ -49,12 +49,12 @@ class Analyzer implements \Serializable
      * @param mixed $diList
      */
     private function store( $className, $diList ) {
+        $name = $this->normalize( $className );
         if( $this->cache instanceof Cache_Interface ) {
-            $name = $this->normalize( $className );
             $this->cache->store( $name, $diList );
             return;
         }
-        $this->cache[ $className ] = $diList;
+        $this->cache[ $name ] = $diList;
     }
     
     /**
@@ -208,35 +208,6 @@ class Analyzer implements \Serializable
             );
         }
         return $injectList;
-    }
-    // +----------------------------------------------------------------------+
-    /**
-     * String representation of object
-     * @link http://php.net/manual/en/serializable.serialize.php
-     * @return string the string representation of the object or null
-     */
-    public function serialize()
-    {
-        $data = array();
-        $list = get_object_vars( $this );
-        foreach( $list as $var => $val ) {
-            if( $var !== 'cache' ) $data[ $var ] = $val;
-        }
-        return serialize( $data );
-    }
-
-    /**
-     * Constructs the object
-     * @link http://php.net/manual/en/serializable.unserialize.php
-     * @param string $serialized   The string representation of the object.
-     * @return mixed the original value unserialized.
-     */
-    public function unserialize( $serialized )
-    {
-        $info = unserialize( $serialized );
-        foreach( $info as $var => $val ) {
-            $this->$var = $val;
-        }
     }
     // +----------------------------------------------------------------------+
 
