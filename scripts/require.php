@@ -5,6 +5,7 @@ require( __DIR__ . '/../src/WScore/DiContainer/Cache/Array.php' );
 require( __DIR__ . '/../src/WScore/DiContainer/Cache/None.php' );
 require( __DIR__ . '/../src/WScore/DiContainer/Cache.php' );
 require( __DIR__ . '/../src/WScore/DiContainer/ContainerInterface.php' );
+require( __DIR__ . '/../src/WScore/DiContainer/Singleton.php' );
 require( __DIR__ . '/../src/WScore/DiContainer/Utils.php' );
 require( __DIR__ . '/../src/WScore/DiContainer/Parser.php' );
 require( __DIR__ . '/../src/WScore/DiContainer/Analyzer.php' );
