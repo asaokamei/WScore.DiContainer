@@ -3,11 +3,21 @@ namespace WScore\DiContainer;
 
 class Container implements ContainerInterface
 {
-    /** @var \WScore\DiContainer\Forger */
+    /** 
+     * @var \WScore\DiContainer\Forger 
+     */
     private $forger;
-    
+
+    /**
+     * definition of an id. 
+     * @var array
+     */
     private $value = array();
-    
+
+    /**
+     * option for forging an object. 
+     * @var array
+     */
     private $option = array();
 
     /**
@@ -45,6 +55,7 @@ class Container implements ContainerInterface
         $option[ 'singleton' ] = true;
         $this->set( $id, $value, $option );
     }
+    
     /**
      * Sets an option for forging an object for the $id service.
      *
