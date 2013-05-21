@@ -117,14 +117,10 @@ class Container implements ContainerInterface
             $found  = $this->forger->forge( $this, $check, $option );
             // singleton: set singleton option to true.
             if( $this->forger->singleton ) {
-                $this->value[ $id ] = $this->share( $found );
+                $this->value[ $id ] = $found;
             }
         }
         return $found;
-    }
-    
-    private function share( $value ) {
-        return new Singleton( $value );
     }
 
     /**
