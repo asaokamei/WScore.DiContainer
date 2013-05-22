@@ -9,22 +9,17 @@ class Container implements ContainerInterface
     private $forger;
 
     /**
-     * definition of an id. 
-     * @var array
+     * @var \WScore\DiContainer\Values
      */
-    private $value = array();
+    private $values = null;
 
     /**
-     * option for forging an object. 
-     * @var array
-     */
-    private $option = array();
-
-    /**
+     * @param \WScore\DiContainer\Values $values
      * @param \WScore\DiContainer\Forger $forger
      */
-    public function __construct( $forger )
+    public function __construct( $values, $forger )
     {
+        $this->values = $values;
         $this->forger = $forger;
     }
 
@@ -39,8 +34,7 @@ class Container implements ContainerInterface
     public function set( $id, $value, $option=array() ) 
     {
         $id = Utils::normalizeClassName( $id );
-        $this->value[ $id ] = $value;
-        if( isset( $option ) ) $this->setOption( $id, $option );
+        $this->values->set( $id, $value, $option );
     }
 
     /**
@@ -64,14 +58,10 @@ class Container implements ContainerInterface
      * @param bool   $reset
      * @return void
      */
-    public function setOption( $id, $option, $reset=true ) 
+    public function setOption( $id, $option, $reset=false )
     {
         $id = Utils::normalizeClassName( $id );
-        $option = Utils::normalizeInjection( $option );
-        if( !$reset && isset( $this->option[ $id ] ) ) {
-            $option = array_merge( $this->option[ $id ], $option );
-        }
-        $this->option[ $id ] = $option;
+        $this->values->setOption( $id, $option, $reset );
     }
 
     /**
@@ -83,7 +73,7 @@ class Container implements ContainerInterface
     public function has( $id ) 
     {
         $id = Utils::normalizeClassName( $id );
-        return array_key_exists( $id, $this->value );
+        return $this->values->get( $id ) ? true: false;
     }
 
     /**
@@ -98,43 +88,45 @@ class Container implements ContainerInterface
     {
         $id = Utils::normalizeClassName( $id );
         $found  = null;
-        $check  = $id;
-        $option = $this->prepareOption( $id, $option );
-        if( array_key_exists( $id, $this->value ) ) {
-            $found = $check = $this->value[ $id ];  // set found value.
+        $found  = $this->values->get( $id );
+        $option = Utils::normalizeOption( $option );
+        if( $found ) {
+            list( $found, $config ) = $found;
+            $option = Utils::mergeOption( $config, $option );
         }
         // check if $found is a closure, or a className to construct.
-        if( $found && is_callable( $found ) ) {
+        if( !$found ) {
+            if( Utils::isClassName( $id ) ) {
+                $found = $this->forge( $id, $id, $option );
+            }
+        }
+        elseif( is_callable( $found ) ) {
             $found = $found( $this );
         }
-        elseif( $found && is_object( $found ) ) {
+        elseif( is_object( $found ) ) {
             // return the found object. 
         }
-        elseif( Utils::isClassName( $check ) ) {
-
-            // it's a class. prepare options to construct an object.
-            $check  = Utils::normalizeClassName( $check );
-            $found  = $this->forger->forge( $this, $check, $option );
-            // singleton: set singleton option to true.
-            if( $this->forger->singleton ) {
-                $this->value[ $id ] = $found;
-            }
+        elseif( Utils::isClassName( $found ) ) {
+            $found = $this->forge( $id, $found, $option );
         }
         return $found;
     }
 
     /**
      * @param string $id
-     * @param array  $option
-     * @return array
+     * @param string $className
+     * @param array $option
+     * @return mixed|void
      */
-    private function prepareOption( $id, $option )
+    private function forge( $id, $className, $option )
     {
-        $option = Utils::normalizeOption( $option ); // normalize input option
-        if( isset( $this->option[$id] ) ) {
-            // get pre-set option from $option, and merge it with the given option.
-            $option = Utils::mergeOption( $this->option[$id], $option );
+        // it's a class. prepare options to construct an object.
+        $className  = Utils::normalizeClassName( $className );
+        $found  = $this->forger->forge( $this, $className, $option );
+        // singleton: set singleton option to true.
+        if( $this->forger->singleton ) {
+            $this->values->set( $id, $found );
         }
-        return $option;
+        return $found;
     }
 }
