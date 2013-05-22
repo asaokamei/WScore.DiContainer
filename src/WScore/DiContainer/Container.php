@@ -29,25 +29,28 @@ class Container implements ContainerInterface
      * @param string     $id
      * @param mixed      $value
      * @param array|null $option
-     * @return void
+     * @return $this
      */
     public function set( $id, $value, $option=array() ) 
     {
         $id = Utils::normalizeClassName( $id );
         $this->values->set( $id, $value, $option );
+        return $this;
     }
 
     /**
      * sets a service value as singleton for $id. 
      * 
-     * @param       $id
-     * @param       $value
-     * @param array $option
+     * @param string $id
+     * @param mixed  $value
+     * @param array  $option
+     * @return $this
      */
     public function singleton( $id, $value, $option=array() ) 
     {
         $option[ 'singleton' ] = true;
         $this->set( $id, $value, $option );
+        return $this;
     }
     
     /**
@@ -56,12 +59,13 @@ class Container implements ContainerInterface
      * @param string $id
      * @param array  $option
      * @param bool   $reset
-     * @return void
+     * @return $this
      */
     public function setOption( $id, $option, $reset=false )
     {
         $id = Utils::normalizeClassName( $id );
         $this->values->setOption( $id, $option, $reset );
+        return $this;
     }
 
     /**
@@ -103,9 +107,6 @@ class Container implements ContainerInterface
         elseif( is_callable( $found ) ) {
             $found = $found( $this );
         }
-        elseif( is_object( $found ) ) {
-            // return the found object. 
-        }
         elseif( Utils::isClassName( $found ) ) {
             $found = $this->forge( $id, $found, $option );
         }
@@ -115,7 +116,7 @@ class Container implements ContainerInterface
     /**
      * @param string $id
      * @param string $className
-     * @param array $option
+     * @param array  $option
      * @return mixed|void
      */
     private function forge( $id, $className, $option )
