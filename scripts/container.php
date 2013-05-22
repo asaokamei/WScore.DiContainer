@@ -1,4 +1,4 @@
 <?php
 namespace WScore\DiContainer;
 
-return new Container( new Forger( new Analyzer( new Parser() ) ) );
+return new Container( new Values(), new Forger( new Analyzer( new Parser() ) ) );
