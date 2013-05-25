@@ -30,12 +30,23 @@ class ValuesTest extends \PHPUnit_Framework_TestCase
         $this->assertTrue( is_array( $option ) );
     }
 
-    public function test_set_get_option()
+    public function test_set_with_option()
     {
         $this->values->set( 'test', 'value', 'option' );
         list( $value, $option ) = $this->values->get( 'test' );
         $this->assertEquals( 'value', $value );
         $this->assertTrue( is_array( $option ) );
         $this->assertEquals( 'option', $option[ 'construct' ][0] );
+    }
+
+    public function test_setOption()
+    {
+        $this->values->set( 'test', 'value', 'option' );
+        $this->values->setOption( 'test', array( 'more' => 'test' ) );
+        list( $value, $option ) = $this->values->get( 'test' );
+        $this->assertEquals( 'value', $value );
+        $this->assertTrue( is_array( $option ) );
+        $this->assertEquals( 'option', $option[ 'construct' ][0] );
+        $this->assertEquals( 'test', $option[ 'construct' ]['more'] );
     }
 }

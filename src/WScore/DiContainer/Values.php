@@ -39,7 +39,7 @@ class Values
         $id = $this->named( $id, $namespace );
         $option = Utils::normalizeOption( $option );
         if( !$reset && isset( $this->values[ $id ][ self::COL_OPTION ] ) ) {
-            $option = array_merge( $this->values[ $id ][ self::COL_OPTION ], $option );
+            $option = Utils::mergeOption( $this->values[ $id ][ self::COL_OPTION ], $option );
         }
         $this->values[ $id ][ self::COL_OPTION ] = $option;
     }
