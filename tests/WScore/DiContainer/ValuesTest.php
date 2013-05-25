@@ -49,4 +49,23 @@ class ValuesTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals( 'option', $option[ 'construct' ][0] );
         $this->assertEquals( 'test', $option[ 'construct' ]['more'] );
     }
+    
+    public function test_namespace()
+    {
+        $this->values->set( 'only', 'normal', 'option' );
+        $this->values->set( 'test', 'normal', 'option' );
+        $this->values->set( 'test', 'named',  'option', 'named' );
+
+        $this->assertEquals( 'normal', $this->values->get( 'test' )[0] );
+        $this->assertEquals( 'named',  $this->values->get( 'test', 'named' )[0] );
+        $this->assertEquals( 'normal', $this->values->get( 'only', 'named' )[0] );
+    }
+
+    public function test_namespace_only_in_named()
+    {
+        $this->values->set( 'name', 'only',   'option', 'named' );
+
+        $this->assertEquals( null,     $this->values->get( 'name' )[0] );
+        $this->assertEquals( 'only',   $this->values->get( 'name', 'named' )[0] );
+    }
 }
