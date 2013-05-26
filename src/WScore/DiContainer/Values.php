@@ -20,8 +20,8 @@ class Values
      */
     public function set( $id, $value, $option=array(), $namespace=null )
     {
-        $id = $this->named( $id, $namespace );
-        $this->values[ $id ] = array( self::COL_VALUE => $value );
+        $id_w_ns = $this->named( $id, $namespace );
+        $this->values[ $id_w_ns ] = array( self::COL_VALUE => $value );
         $this->setOption( $id, $option, true, $namespace );
     }
 
@@ -53,8 +53,11 @@ class Values
      */
     public function get( $id, $namespace=null )
     {
-        if( array_key_exists( $this->named( $id, $namespace ), $this->values ) ) {
-            return $this->values[ $this->named( $id, $namespace ) ];
+        if( $namespace ) {
+            $id_with_ns = $this->named( $id, $namespace );
+            if( array_key_exists( $id_with_ns, $this->values ) ) {
+                return $this->values[ $id_with_ns ];
+            }
         }
         return array_key_exists( $id, $this->values ) ? $this->values[ $id ] : null;
     }
