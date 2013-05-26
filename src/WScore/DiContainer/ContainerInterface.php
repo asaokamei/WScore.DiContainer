@@ -7,4 +7,6 @@ interface ContainerInterface
     public function setOption( $id, $option );
     public function has( $id );
     public function get( $id, $option=array() );
+    public function getNamespace();
+    public function setNamespace( $namespace=null );
 }

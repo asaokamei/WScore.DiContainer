@@ -13,6 +13,13 @@ class Container implements ContainerInterface
      */
     private $values = null;
 
+    /** 
+     * namespace for object construction. 
+     * 
+     * @var null|string 
+     */
+    public $namespace = null;
+    
     /**
      * @param \WScore\DiContainer\Values $values
      * @param \WScore\DiContainer\Forger $forger
@@ -34,7 +41,7 @@ class Container implements ContainerInterface
     public function set( $id, $value, $option=array() ) 
     {
         $id = Utils::normalizeClassName( $id );
-        $this->values->set( $id, $value, $option );
+        $this->values->set( $id, $value, $option, $this->namespace );
         return $this;
     }
 
@@ -64,7 +71,7 @@ class Container implements ContainerInterface
     public function setOption( $id, $option, $reset=false )
     {
         $id = Utils::normalizeClassName( $id );
-        $this->values->setOption( $id, $option, $reset );
+        $this->values->setOption( $id, $option, $reset, $this->namespace );
         return $this;
     }
 
@@ -77,7 +84,7 @@ class Container implements ContainerInterface
     public function has( $id ) 
     {
         $id = Utils::normalizeClassName( $id );
-        return $this->values->get( $id ) ? true: false;
+        return $this->values->get( $id, $this->namespace ) ? true: false;
     }
 
     /**
@@ -92,7 +99,7 @@ class Container implements ContainerInterface
     {
         $id = Utils::normalizeClassName( $id );
         $found  = null;
-        $found  = $this->values->get( $id );
+        $found  = $this->values->get( $id, $this->namespace );
         $option = Utils::normalizeOption( $option );
         if( $found ) {
             list( $found, $config ) = $found;
@@ -126,8 +133,22 @@ class Container implements ContainerInterface
         $found  = $this->forger->forge( $this, $className, $option );
         // singleton: set singleton option to true.
         if( $this->forger->singleton ) {
-            $this->values->set( $id, $found );
+            $this->values->set( $id, $found, null, $this->namespace );
         }
         return $found;
+    }
+
+    /**
+     * @return null|string
+     */
+    public function getNamespace() {
+        return $this->namespace;
+    }
+
+    /**
+     * @param null|string $namespace
+     */
+    public function setNamespace( $namespace=null ) {
+        $this->namespace = $namespace;
     }
 }

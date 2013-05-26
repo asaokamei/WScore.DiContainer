@@ -23,4 +23,12 @@ class Container implements ContainerInterface
     {
         return $id;
     }
+
+    public function getNamespace()
+    {
+    }
+
+    public function setNamespace( $namespace = null )
+    {
+    }
 }

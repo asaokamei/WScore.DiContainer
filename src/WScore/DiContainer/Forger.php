@@ -98,6 +98,15 @@ class Forger
 
         $injectList = $this->analyze( $className );
         if( $option ) $injectList = Utils::mergeOption( $injectList, $option );
+        
+        // set namespace if set. 
+        $namespaceOriginal = $container->getNamespace();
+        $namespace         = null;
+        if( isset( $injectList[ 'namespace' ] ) ) {
+            $container->setNamespace( $injectList[ 'namespace' ] );
+        }
+        
+        // get reflection of class, and a new instance. 
         $refClass = new \ReflectionClass( $className );
         $object = Utils::newInstanceWithoutConstructor( $refClass );
         
@@ -127,6 +136,8 @@ class Forger
         } else {
             $this->singleton = false;
         }
+        // set namespace to original value. 
+        $container->setNamespace( $namespaceOriginal );
         return $object;
     }
 
