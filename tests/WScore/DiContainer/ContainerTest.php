@@ -190,4 +190,30 @@ class ContainerTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals( $names . 'Named', '\\' . get_class( $n ) );
         $this->assertEquals( $names . 'B', '\\' . get_class( $n->a ) );
     }
+
+    function test_namespace_annotation()
+    {
+        $names = '\WScore\tests\DiContainer\MockClass\\';
+        $class = $names . 'N';
+
+        $this->container->setNamespace( 'test' );
+        $this->container->set( $names . 'A', $names . 'B' );
+        $this->container->setNamespace();
+
+        $n = $this->container->get( $class );
+
+        $this->assertEquals( $names . 'N', '\\' . get_class( $n ) );
+        $this->assertEquals( $names . 'B', '\\' . get_class( $n->a ) );
+    }
+
+    function test_namespace_annotation_without_definition()
+    {
+        $names = '\WScore\tests\DiContainer\MockClass\\';
+        $class = $names . 'N';
+
+        $n = $this->container->get( $class );
+
+        $this->assertEquals( $names . 'N', '\\' . get_class( $n ) );
+        $this->assertEquals( $names . 'A', '\\' . get_class( $n->a ) );
+    }
 }
