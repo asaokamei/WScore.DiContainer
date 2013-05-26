@@ -90,6 +90,11 @@ class Analyzer
         $comment = $refClass->getDocComment();
         $dimClass = $this->parser->parse( $comment );
         $diList = array();
+        if( isset( $dimClass[ 'namespace' ] ) ) {
+            $diList[ 'namespace' ] = $dimClass[ 'namespace' ];
+        } else {
+            $diList[ 'namespace' ] = null;
+        }
         if( isset( $dimClass[ 'singleton' ] ) && $dimClass[ 'singleton' ] ) {
             $diList[ 'singleton' ] = true;
         } else {
