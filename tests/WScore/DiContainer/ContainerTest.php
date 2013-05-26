@@ -169,4 +169,25 @@ class ContainerTest extends \PHPUnit_Framework_TestCase
         $this->assertSame( $object1, $object2 );
 
     }
+    
+    function test_namespace()
+    {
+        $names = '\WScore\tests\DiContainer\MockClass\\';
+        $class = $names . 'Named';
+        
+        $this->container->setNamespace( 'test' );
+        $this->container->set( $names . 'A', $names . 'B' );
+        $this->container->setNamespace();
+        
+        $n = $this->container->get( $class );
+
+        $this->assertEquals( $names . 'Named', '\\' . get_class( $n ) );
+        $this->assertEquals( $names . 'A', '\\' . get_class( $n->a ) );
+
+        $this->container->setNamespace( 'test' );
+        $n = $this->container->get( $class );
+
+        $this->assertEquals( $names . 'Named', '\\' . get_class( $n ) );
+        $this->assertEquals( $names . 'B', '\\' . get_class( $n->a ) );
+    }
 }
