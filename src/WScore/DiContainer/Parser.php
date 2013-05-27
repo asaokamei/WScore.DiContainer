@@ -16,7 +16,7 @@ class Parser
     public function parse( $comment )
     {
         $injectList = array();
-        if( preg_match( '/@namespace[\s]+([\w]+)/mi', $comment, $matches ) ) {
+        if( preg_match( '/@namespace[\s]+([-_\w]+)/mi', $comment, $matches ) ) {
             $injectList[ 'namespace' ] = $matches[1];
         }
         if( preg_match( '/@singleton/mi', $comment ) ) {
