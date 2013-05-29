@@ -13,21 +13,32 @@ class Container implements ContainerInterface
      */
     private $values = null;
 
+    /**
+     * @var \WScore\DiContainer\Singleton
+     */
+    private $singletons;
+    
     /** 
      * namespace for object construction. 
      * 
      * @var null|string 
      */
     public $namespace = null;
-    
+
     /**
      * @param \WScore\DiContainer\Values $values
      * @param \WScore\DiContainer\Forger $forger
+     * @param \WScore\DiContainer\Singleton  $singles
      */
-    public function __construct( $values, $forger )
+    public function __construct( $values, $forger, $singles=null )
     {
         $this->values = $values;
         $this->forger = $forger;
+        if( $singles ) {
+            $this->singletons = $singles;
+        } else {
+            $this->singletons = new Singleton();
+        }
     }
 
     /**
@@ -98,6 +109,9 @@ class Container implements ContainerInterface
     public function get( $id, $option = array() )
     {
         $id = Utils::normalizeClassName( $id );
+        if( $found = $this->singletons->fetch( $id ) ) {
+            return $found;
+        }
         $found  = null;
         $found  = $this->values->get( $id, $this->namespace );
         $option = Utils::normalizeOption( $option );
@@ -133,7 +147,7 @@ class Container implements ContainerInterface
         $found  = $this->forger->forge( $this, $className, $option );
         // singleton: set singleton option to true.
         if( $this->forger->singleton ) {
-            $this->values->set( $id, $found, null, $this->namespace );
+            $this->singletons->store( $id, $found );
         }
         return $found;
     }
