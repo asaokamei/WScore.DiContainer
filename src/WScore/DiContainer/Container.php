@@ -28,7 +28,7 @@ class Container implements ContainerInterface
     /**
      * @param \WScore\DiContainer\Values $values
      * @param \WScore\DiContainer\Forge\Forger $forger
-     * @param \WScore\DiContainer\Singleton  $singles
+     * @param \WScore\DiContainer\Storage\IdOnly  $singles
      */
     public function __construct( $values, $forger, $singles=null )
     {
