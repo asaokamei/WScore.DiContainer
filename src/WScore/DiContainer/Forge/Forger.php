@@ -47,9 +47,6 @@ class Forger
     /** @var null|\WScore\DiContainer\Cache_Interface */
     private $cache = null;
     
-    /** @var bool */
-    public $singleton = false;
-    
     /**
      * @param \WScore\DiContainer\Forge\Analyzer $analyzer
      * @param \WScore\DiContainer\Cache_Interface   $cache
@@ -86,27 +83,35 @@ class Forger
     private function store( $className, $object ) {
         if( isset( $this->cache ) ) $this->cache->store( $this->normalize( $className ), $object );
     }
-    
+
     /**
      * constructs an object of $className.
      *
      * @param ContainerInterface $container
-     * @param string $className
-     * @param array  $option
+     * @param Option|string      $option
+     * @throws \RuntimeException
      * @return mixed|void
      */
-    public function forge( $container, $className, $option=array() )
+    public function forge( $container, $option )
     {
+        if( is_string( $option ) ) {
+            $className = $option;
+            $option    = null;
+        } elseif( $option instanceof Option ) {
+            $className = $option->getClass();
+        } else {
+            throw new \RuntimeException( 'not an Option' );
+        }
         if( ( $object = $this->fetch( $className ) ) !== false ) return $object;
 
-        $injectList = $this->analyze( $className );
-        if( $option ) $injectList = Utils::mergeOption( $injectList, $option );
+        $config = $this->analyze( $className );
+        $config->merge( $option );
         
         // set namespace if set. 
         $namespaceOriginal = $container->getNamespace();
         $namespace         = null;
-        if( isset( $injectList[ 'namespace' ] ) ) {
-            $container->setNamespace( $injectList[ 'namespace' ] );
+        if( $namespace = $config->getNameSpace() ) {
+            $container->setNamespace( $namespace );
         }
         
         // get reflection of class, and a new instance. 
@@ -114,30 +119,28 @@ class Forger
         $object = Utils::newInstanceWithoutConstructor( $refClass );
         
         // property injection
-        if( !empty( $injectList[ 'property' ] ) ) {
-            foreach( $injectList[ 'property' ] as $propName => $id ) {
+        if( $properties = $config->getProperty() ) {
+            foreach( $properties as $propName => $id ) {
                 $this->injectProperty( $container, $object, $propName, $id );
             }
         }
         
         // setter injection
-        if( !empty( $injectList[ 'setter' ] ) ) {
-            foreach( $injectList[ 'setter' ] as $name => $list ) {
+        if( $setters = $config->getSetter() ) {
+            foreach( $setters as $name => $list ) {
                 $this->injectMethod( $container, $object, $name, $list );
             }
         }
         
         // construct object
-        $this->injectConstruct( $container, $object, $refClass, $injectList[ 'construct' ] );
+        $this->injectConstruct( $container, $object, $refClass, $config->getConstructor() );
         
         // cache an object, if cacheable annotation is set. 
-        if( isset( $injectList[ 'cacheable'] ) && $injectList[ 'cacheable' ] ) {
+        if( $config->getCacheAble() ) {
             $this->store( $className, $object );
         }
-        if( isset( $injectList[ 'singleton'] ) && $injectList[ 'singleton' ] ) {
-            $this->singleton = true;
-        } else {
-            $this->singleton = false;
+        if( $config->getScope() === 'singleton' && is_object( $option ) ) {
+            $option->setSingleton();
         }
         // set namespace to original value. 
         $container->setNamespace( $namespaceOriginal );
@@ -199,9 +202,10 @@ class Forger
         $methodName = $refConstruct->getName();
         $this->injectMethod( $container, $object, $methodName, $list );
     }
+
     /**
      * @param string $className
-     * @return mixed
+     * @return Option
      */
     public function analyze( $className ) 
     {

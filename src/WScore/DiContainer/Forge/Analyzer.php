@@ -56,66 +56,62 @@ class Analyzer
         }
         $this->cache[ $name ] = $diList;
     }
-    
+
     /**
      * list dependencies of a className.
      *
      * @param string $className
-     * @return array
+     * @return Option
      */
     public function analyze( $className )
     {
-        if( false !== $diList = $this->fetch( $className ) ) return $diList;
+        if( false !== $option = $this->fetch( $className ) ) return $option;
+        $option = new Option( $className );
 
         $refClass = new \ReflectionClass( $className );
-        $dimConst = $this->constructor( $refClass );
-        $dimProp  = $this->property( $refClass );
-        $dimSet   = $this->setter( $refClass );
-        $diList   = $this->getClassAnnotation( $refClass );
-        $diList   = array_merge( $diList, array(
-            'construct' => $dimConst,
-            'setter'    => $dimSet,
-            'property'  => $dimProp,
-        ) );
-        $this->store( $className, $diList );
-        return $diList;
+        $this->constructor( $refClass, $option );
+        $this->property(    $refClass, $option );
+        $this->setter( $refClass, $option );
+        $this->getClassAnnotation( $refClass, $option );
+        $this->store( $className, $option );
+        return $option;
     }
 
     /**
      * @param \ReflectionClass $refClass
+     * @param Option           $option
      * @return array
      */
-    private function getClassAnnotation( $refClass )
+    private function getClassAnnotation( $refClass, $option )
     {
         $comment = $refClass->getDocComment();
         $dimClass = $this->parser->parse( $comment );
         $diList = array();
         if( isset( $dimClass[ 'namespace' ] ) ) {
-            $diList[ 'namespace' ] = $dimClass[ 'namespace' ];
-        } else {
-            $diList[ 'namespace' ] = null;
+            $option->setNameSpace( $dimClass[ 'namespace' ] );
         }
         if( isset( $dimClass[ 'singleton' ] ) && $dimClass[ 'singleton' ] ) {
-            $diList[ 'singleton' ] = true;
-        } else {
-            $diList[ 'singleton' ] = false;
+            $option->setSingleton();
         }
         if( isset( $dimClass[ 'cacheable' ] ) && $dimClass[ 'cacheable' ] ) {
-            $diList[ 'cacheable' ] = true;
-        } else {
-            $diList[ 'cacheable' ] = false;
+            $option->setCacheAble();
         }
-        return $diList;
     }
 
     /**
      * @param \ReflectionClass $refClass
-     * @return array
+     * @param Option           $option
      */
-    private function constructor( $refClass )
+    private function constructor( $refClass, $option )
     {
         $refConst   = $refClass->getConstructor();
-        return $this->analyzeMethod( $refConst );
+        $arguments  = $this->analyzeMethod( $refConst );
+        if( !empty( $arguments ) ) {
+            foreach( $arguments as $arg ) {
+                extract( $arg );
+                $option->setConstructor( $arg[ 'name' ], $arg[ 'id' ], $arg[ 'default' ] );
+            }
+        }
     }
 
     /**
@@ -123,11 +119,10 @@ class Analyzer
      * searches all properties in parent classes as well.
      *
      * @param \ReflectionClass $refClass
-     * @return array
+     * @param Option           $option
      */
-    private function property( $refClass )
+    private function property( $refClass, $option )
     {
-        $injectList = array();
         // loop for all parent classes. 
         do {
             // get all properties. ignore if no properties found. 
@@ -136,14 +131,13 @@ class Analyzer
             foreach( $properties as $refProp )
             {
                 // ignore property if already found as @Inject
-                if( isset( $injectList[ $refProp->name ] ) ) continue;
+                if( $option->getProperty( $refProp->name ) ) continue;
                 if( !$comments = $refProp->getDocComment() ) continue;
                 if( !$info = $this->parser->parse( $comments ) ) continue;
                 
-                $injectList[ $refProp->name ] = $info[0]['id'];
+                $option->setProperty( $refProp->name, $info[0][ 'id' ] );
             }
         } while( false !== ( $refClass = $refClass->getParentClass() ) );
-        return $injectList;
     }
 
     /**
@@ -151,24 +145,24 @@ class Analyzer
      * searches all properties in parent classes as well.
      *
      * @param \ReflectionClass $refClass
-     * @return array
+     * @param Option           $option
      */
-    private function setter( $refClass )
+    private function setter( $refClass, $option )
     {
-        $injectList = array();
         do {
             
             if( !$methods = $refClass->getMethods() ) continue;
             foreach( $methods as $refMethod )
             {
                 if( $refMethod->isConstructor() ) continue;
-                if( isset( $injectList[ $refMethod->name ] ) ) continue;
+                if( $option->getSetter( $refMethod->name ) ) continue;
                 if( $info = $this->analyzeMethod( $refMethod ) ) {
-                    $injectList[$refMethod->name] = $info;
+                    foreach( $info as $arg ) {
+                        $option->setSetter( $refMethod->name, $arg[ 'name' ], $arg[ 'id' ], $arg[ 'default' ] );
+                    }
                 }
             }
         } while( false !== ( $refClass = $refClass->getParentClass() ) );
-        return $injectList;
     }
 
     /**

@@ -6,7 +6,7 @@ use \WScore\DiContainer\ContainerInterface;
 class Container implements ContainerInterface
 {
 
-    public function set( $id, $value, $option = null )
+    public function set( $id, $value=null )
     {
     }
 
@@ -19,7 +19,7 @@ class Container implements ContainerInterface
         return true;
     }
 
-    public function get( $id, $option = array() )
+    public function get( $id )
     {
         return $id;
     }

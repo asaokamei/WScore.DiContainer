@@ -1,5 +1,5 @@
 <?php
-namespace WScore\DiContainer\Storage;
+namespace WScore\DiContainer\Forge;
 
 class Option
 {
@@ -122,6 +122,16 @@ class Option
         return $this->scope;
     }
 
+    public function setNameSpace( $namespace ) {
+        $this->namespace = $namespace;
+    }
+
+    /**
+     * @return null|string
+     */
+    public function getNameSpace() {
+        return $this->namespace;
+    }
     // +----------------------------------------------------------------------+
     //  constructor injection
     // +----------------------------------------------------------------------+
@@ -132,7 +142,14 @@ class Option
      */
     public function setConstructor( $name, $id, $default=null ) 
     {
-        $this->construct = $this->packMethodInfo( $name, $id, $default );
+        $this->construct[] = $this->packMethodInfo( $name, $id, $default );
+    }
+
+    /**
+     * @return array
+     */
+    public function getConstructor() {
+        return $this->construct;
     }
     
     // +----------------------------------------------------------------------+
@@ -180,12 +197,56 @@ class Option
      * @param string $id
      */
     public function setProperty( $propertyName, $id ) {
-        $this->setter[ $propertyName ] = $id;
+        $this->property[ $propertyName ] = $id;
+    }
+
+    /**
+     * @param $name
+     * @return array|null
+     */
+    public function getProperty( $name=null ) {
+        if( isset( $name ) ) {
+            return array_key_exists( $name, $this->property ) ? $this->property[ $name ] : null;
+        }
+        return $this->property;
     }
 
     // +----------------------------------------------------------------------+
     //  utilities
     // +----------------------------------------------------------------------+
+    /**
+     * @param Option $option
+     * @throws \RuntimeException
+     */
+    public function merge( $option )
+    {
+        if( !$option ) return;
+        if( $this->className !== $option->getClass() ) {
+            $message = sprintf( 'class not match: %s and %s', $this->className, $option->getClass() );
+            throw new \RuntimeException( $message );
+        }
+        $this->setNameSpace( $option->getNameSpace() );
+        $this->setScope(     $option->getScope() );
+        $this->setCacheAble( $option->getCacheAble() );
+        // constructor
+        if( $construct = $option->getConstructor() ) {
+            foreach( $construct as $arg ) {
+                $this->setConstructor( $arg['name'], $arg['id'], $arg['default'] );
+            }
+        }
+        if( $properties = $option->getProperty() ) {
+            foreach( $properties as $name => $id ) {
+                $this->setProperty( $name, $id );
+            }
+        }
+        if( $setters = $option->getSetter() ) {
+            foreach( $setters as $name => $info ) {
+                foreach( $info as $arg ) {
+                    $this->setSetter( $name, $arg['name'], $arg['id'], $arg['default'] );
+                }
+            }
+        }
+    }
     /**
      * normalize dependency option.
      * option can be set for construct, property, or setter.

@@ -1,6 +1,9 @@
 <?php
 namespace WScore\DiContainer;
 
+use WScore\DiContainer\Forge\Option;
+use WScore\DiContainer\Utils;
+
 class Container implements ContainerInterface
 {
     /** 
@@ -24,6 +27,8 @@ class Container implements ContainerInterface
      * @var null|string 
      */
     public $namespace = null;
+    
+    public $lastId = null;
 
     /**
      * @param \WScore\DiContainer\Values $values
@@ -46,29 +51,55 @@ class Container implements ContainerInterface
      *
      * @param string     $id
      * @param mixed      $value
-     * @param array|null $option
      * @return $this
      */
-    public function set( $id, $value, $option=array() ) 
+    public function set( $id, $value=null ) 
     {
         $id = Utils::normalizeClassName( $id );
-        $this->values->set( $id, $value, $option, $this->namespace );
+        if( is_null( $value ) ) {
+            if( Utils::isClassName( $id ) ) {
+                $value = new Option( $id );
+            }
+        } else {
+            if( Utils::isClassName( $value ) ) {
+                $value = new Option( $value );
+            }
+        }
+        $this->values->set( $id, $value, $this->namespace );
+        $this->lastId = $id;
         return $this;
     }
 
     /**
      * sets a service value as singleton for $id. 
      * 
-     * @param string $id
-     * @param mixed  $value
-     * @param array  $option
      * @return $this
      */
-    public function singleton( $id, $value, $option=array() ) 
+    public function singleton() 
     {
-        $option[ 'singleton' ] = true;
-        $this->set( $id, $value, $option );
+        if( $this->lastId ) {
+            $option = $this->getOption( $this->lastId );
+            if( is_object( $option ) && $option instanceof Option ) {
+                $option->setSingleton();
+            }
+        }
         return $this;
+    }
+
+    /**
+     * @param $id
+     * @return mixed|null|Option
+     */
+    public function getOption( $id )
+    {
+        $id = Utils::normalizeClassName( $id );
+        if( $option = $this->values->get( $id, $this->namespace ) ) {
+            return $option;
+        }
+        if( Utils::isClassName( $id ) ) {
+            return new Option( $id );
+        }
+        return null;
     }
     
     /**
@@ -103,10 +134,9 @@ class Container implements ContainerInterface
      * Forges an object if the set value or the $id is a class name.
      *
      * @param string $id
-     * @param array  $option
      * @return mixed|void
      */
-    public function get( $id, $option = array() )
+    public function get( $id )
     {
         $id = Utils::normalizeClassName( $id );
         if( $found = $this->singletons->fetch( $id ) ) {
@@ -114,39 +144,27 @@ class Container implements ContainerInterface
         }
         $found  = null;
         $found  = $this->values->get( $id, $this->namespace );
-        $option = Utils::normalizeOption( $option );
-        if( $found ) {
-            list( $found, $config ) = $found;
-            $option = Utils::mergeOption( $config, $option );
-        }
         // check if $found is a closure, or a className to construct.
-        if( !$found ) {
-            if( Utils::isClassName( $id ) ) {
-                $found = $this->forge( $id, $id, $option );
-            }
-        }
-        elseif( is_callable( $found ) ) {
+        if( is_callable( $found ) ) {
             $found = $found( $this );
         }
-        elseif( Utils::isClassName( $found ) ) {
-            $found = $this->forge( $id, $found, $option );
+        elseif( is_object( $found ) && $found instanceof Option ) {
+            $found = $this->forge( $id, $found );
         }
         return $found;
     }
 
     /**
      * @param string $id
-     * @param string $className
-     * @param array  $option
+     * @param Option $option
      * @return mixed|void
      */
-    private function forge( $id, $className, $option )
+    private function forge( $id, $option )
     {
         // it's a class. prepare options to construct an object.
-        $className  = Utils::normalizeClassName( $className );
-        $found  = $this->forger->forge( $this, $className, $option );
+        $found  = $this->forger->forge( $this, $option );
         // singleton: set singleton option to true.
-        if( $this->forger->singleton ) {
+        if( $option->getScope() === 'singleton' ) {
             $this->singletons->store( $id, $found );
         }
         return $found;
