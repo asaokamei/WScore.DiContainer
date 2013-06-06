@@ -4,6 +4,11 @@ namespace WScore\DiContainer\Storage;
 class Option
 {
     /**
+     * @var string
+     */
+    protected $className;
+    
+    /**
      * @var null|string
      */
     protected $namespace = null;
@@ -36,6 +41,48 @@ class Option
     // +----------------------------------------------------------------------+
     //  scopes and caches
     // +----------------------------------------------------------------------+
+    /**
+     * @param null|string $className
+     */
+    public function __construct( $className=null ) {
+        $this->setClass( $className );
+    }
+
+    /**
+     * @param $className
+     * @return static
+     */
+    public static function forgeOption( $className ) {
+        return new static( $className );
+    }
+
+    /**
+     * @param string $className
+     */
+    public function setClass( $className ) {
+        $this->className = $className;
+    }
+
+    /**
+     * @return string
+     */
+    public function getClass() {
+        return $this->className;
+    }
+    // +----------------------------------------------------------------------+
+    //  scopes and caches
+    // +----------------------------------------------------------------------+
+    /**
+     * @param string $scope
+     */
+    public function setScope( $scope )
+    {
+        $scope = strtolower( $scope );
+        if(     $scope === 'singleton' ) $this->setSingleton();
+        elseif( $scope === 'cacheable' ) $this->setCacheAble();
+        else $this->scope = $scope; 
+    }
+
     /**
      * @param bool $isCacheAble
      */
