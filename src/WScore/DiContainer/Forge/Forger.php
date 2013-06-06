@@ -1,5 +1,5 @@
 <?php
-namespace WScore\DiContainer;
+namespace WScore\DiContainer\Forge;
 
 /*
 order of injection
@@ -33,6 +33,9 @@ structure of $injectList
 
 
  */
+use WScore\DiContainer\ContainerInterface;
+use WScore\DiContainer\Utils;
+
 class Forger
 {
     /** 
@@ -87,7 +90,7 @@ class Forger
     /**
      * constructs an object of $className.
      *
-     * @param \WScore\DiContainer\ContainerInterface $container
+     * @param ContainerInterface $container
      * @param string $className
      * @param array  $option
      * @return mixed|void
@@ -145,7 +148,7 @@ class Forger
      * injects a $id object from $container into $object's property ($refProp).
      * if $refProp is a property name, it can only inject to public property.
      *
-     * @param \WScore\DiContainer\ContainerInterface $container
+     * @param ContainerInterface $container
      * @param object $object
      * @param string $propName
      * @param string $id
@@ -160,7 +163,7 @@ class Forger
      * injects a list of $id from $container into $object's method ($refMethod).
      * if $refMethod is a method name, it can only inject to public method.
      *
-     * @param \WScore\DiContainer\ContainerInterface $container
+     * @param ContainerInterface $container
      * @param object $object
      * @param string $methodName
      * @param array $list

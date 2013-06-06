@@ -1,21 +1,21 @@
 <?php
 namespace WScore\tests\DiContainer;
 
-use \WScore\DiContainer\Parser;
-use \WScore\DiContainer\Analyzer;
+use \WScore\DiContainer\Forge\Parser;
+use \WScore\DiContainer\Forge\Analyzer;
 use \WScore\DiContainer\Cache;
-use \WScore\DiContainer\Forger;
+use \WScore\DiContainer\Forge\Forger;
 use \WScore\tests\DiContainer\MockClass\Container;
 
 class Forger_CachedTest extends \PHPUnit_Framework_TestCase
 {
-    /** @var \WScore\DiContainer\Parser */
+    /** @var \WScore\DiContainer\Forge\Parser */
     var $parser;
 
-    /** @var \WScore\DiContainer\Analyzer */
+    /** @var \WScore\DiContainer\Forge\Analyzer */
     var $analyzer;
 
-    /** @var \WScore\DiContainer\Forger */
+    /** @var \WScore\DiContainer\Forge\Forger */
     var $forger;
     
     var $container;

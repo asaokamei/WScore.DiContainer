@@ -4,7 +4,7 @@ namespace WScore\DiContainer;
 class Container implements ContainerInterface
 {
     /** 
-     * @var \WScore\DiContainer\Forger 
+     * @var \WScore\DiContainer\Forge\Forger 
      */
     private $forger;
 
@@ -27,7 +27,7 @@ class Container implements ContainerInterface
 
     /**
      * @param \WScore\DiContainer\Values $values
-     * @param \WScore\DiContainer\Forger $forger
+     * @param \WScore\DiContainer\Forge\Forger $forger
      * @param \WScore\DiContainer\Singleton  $singles
      */
     public function __construct( $values, $forger, $singles=null )

@@ -1,5 +1,5 @@
 <?php
-namespace WScore\DiContainer;
+namespace WScore\DiContainer\Forge;
 
 use \WScore\DiContainer\Cache_Interface;
 

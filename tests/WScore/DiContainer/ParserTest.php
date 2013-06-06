@@ -1,11 +1,11 @@
 <?php
 namespace WScore\tests\DiContainer;
 
-use \WScore\DiContainer\Parser;
+use \WScore\DiContainer\Forge\Parser;
 
 class ParserTest extends \PHPUnit_Framework_TestCase
 {
-    /** @var \WScore\DiContainer\Parser */
+    /** @var \WScore\DiContainer\Forge\Parser */
     var $parser;
 
     public static function setUpBeforeClass() {

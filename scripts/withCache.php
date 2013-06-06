@@ -4,8 +4,8 @@ namespace WScore\DiContainer;
 require_once __DIR__ . '/require.php';
 return new Container(
     new Values(),
-    new Forger(
-        new Analyzer( new Parser(), Cache::getCache() ),
+    new Forge\Forger(
+        new Forge\Analyzer( new Forge\Parser(), Cache::getCache() ),
         Cache::getCache()
     )
 );

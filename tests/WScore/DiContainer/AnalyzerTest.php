@@ -2,15 +2,15 @@
 namespace WScore\tests\DiContainer;
 
 use WScore\DiContainer\Cache;
-use \WScore\DiContainer\Parser;
-use \WScore\DiContainer\Analyzer;
+use \WScore\DiContainer\Forge\Parser;
+use \WScore\DiContainer\Forge\Analyzer;
 
 class AnalyzerTest extends \PHPUnit_Framework_TestCase
 {
-    /** @var \WScore\DiContainer\Parser */
+    /** @var \WScore\DiContainer\Forge\Parser */
     var $parser;
     
-    /** @var \WScore\DiContainer\Analyzer */
+    /** @var \WScore\DiContainer\Forge\Analyzer */
     var $analyzer;
 
     public static function setUpBeforeClass() {
