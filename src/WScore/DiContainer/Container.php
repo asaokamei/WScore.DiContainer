@@ -14,7 +14,7 @@ class Container implements ContainerInterface
     private $values = null;
 
     /**
-     * @var \WScore\DiContainer\Singleton
+     * @var \WScore\DiContainer\Storage\IdOnly
      */
     private $singletons;
     
@@ -37,7 +37,7 @@ class Container implements ContainerInterface
         if( $singles ) {
             $this->singletons = $singles;
         } else {
-            $this->singletons = new Singleton();
+            $this->singletons = new Storage\IdOnly();
         }
     }
 
