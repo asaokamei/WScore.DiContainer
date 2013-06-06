@@ -5,14 +5,14 @@ use \WScore\DiContainer\Cache_Interface;
 
 class Analyzer
 {
-    /** @var \WScore\DiContainer\Parser */
+    /** @var \WScore\DiContainer\Forge\Parser */
     protected $parser;
     
     /** @var array|Cache_Interface  */
     protected $cache = array();
 
     /**
-     * @param \WScore\DiContainer\Parser           $parser
+     * @param \WScore\DiContainer\Forge\Parser           $parser
      * @param Cache_Interface                      $cache
      */
     public function __construct( $parser, $cache=null )

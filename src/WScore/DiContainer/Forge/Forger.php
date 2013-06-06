@@ -37,7 +37,7 @@ class Forger
 {
     /** 
      * @Inject
-     * @var \WScore\DiContainer\Analyzer
+     * @var \WScore\DiContainer\Forge\Analyzer
      */
     private $analyzer;
 
@@ -48,7 +48,7 @@ class Forger
     public $singleton = false;
     
     /**
-     * @param \WScore\DiContainer\Analyzer $analyzer
+     * @param \WScore\DiContainer\Forge\Analyzer $analyzer
      * @param \WScore\DiContainer\Cache_Interface   $cache
      */
     public function __construct( $analyzer=null, $cache=null )
