@@ -2,6 +2,7 @@
 namespace WScore\tests\DiContainer;
 
 use WScore\DiContainer\Cache;
+use WScore\DiContainer\Forge\Option;
 use \WScore\DiContainer\Forge\Parser;
 use \WScore\DiContainer\Forge\Analyzer;
 
@@ -37,24 +38,29 @@ class AnalyzerTest extends \PHPUnit_Framework_TestCase
         $class = $names . 'X';
         $return = $this->analyzer->analyze( $class );
         $this->assertNotEmpty( $return );
+        $this->assertTrue( $return instanceof Option );
         
-        $this->assertEquals( $names.'A', $return['construct'][0]['id'] );
-        $this->assertEquals( $names.'B', $return['construct'][1]['id'] );
-        $this->assertEquals( $names.'C', $return['property']['propC'] );
-        $this->assertEquals( $names.'C', $return['setter']['setC'][0]['id'] );
-        $this->assertTrue( $return[ 'singleton' ] );
-        $this->assertEquals( 'a', $return['construct'][0]['name'] );
-        $this->assertEquals( 'b', $return['construct'][1]['name'] );
-        $this->assertEquals( 'c', $return['setter']['setC'][0]['name'] );
+        $construct = $return->getConstructor();
+        $properties= $return->getProperty();
+        $setter    = $return->getSetter();
+        
+        $this->assertEquals( $names.'A', $construct[0]['id'] );
+        $this->assertEquals( $names.'B', $construct[1]['id'] );
+        $this->assertEquals( $names.'C', $properties['propC'] );
+        $this->assertEquals( $names.'C', $setter['setC'][0]['id'] );
+        $this->assertEquals( 'singleton', $return->getScope() );
+        $this->assertEquals( 'a', $construct[0]['name'] );
+        $this->assertEquals( 'b', $construct[1]['name'] );
+        $this->assertEquals( 'c', $setter['setC'][0]['name'] );
     }
     function test_ignore_methods_without_inject()
     {
         $names = '\WScore\tests\DiContainer\MockClass\\';
         $class = $names . 'X';
         $return = $this->analyzer->analyze( $class );
+        $setter = $return->getSetter();
 
-        $this->assertArrayHasKey( 'setter', $return );
-        $this->assertArrayNotHasKey( 'noSetter', $return['setter'] );
+        $this->assertArrayNotHasKey( 'noSetter', $setter );
     }
 
     function test_analyze_inherited_class()
@@ -64,13 +70,17 @@ class AnalyzerTest extends \PHPUnit_Framework_TestCase
         $return = $this->analyzer->analyze( $class );
         $this->assertNotEmpty( $return );
 
-        $this->assertEquals( $names.'A', $return['construct'][0]['id'] );
-        $this->assertEquals( $names.'B', $return['construct'][1]['id'] );
-        $this->assertEquals( $names.'C', $return['property']['propC'] );
-        $this->assertEquals( $names.'CC', $return['setter']['setC'][0]['id'] );
-        $this->assertFalse( $return[ 'singleton' ] );
-        $this->assertEquals( 'a', $return['construct'][0]['name'] );
-        $this->assertEquals( 'b', $return['construct'][1]['name'] );
-        $this->assertEquals( 'c', $return['setter']['setC'][0]['name'] );
+        $construct = $return->getConstructor();
+        $properties= $return->getProperty();
+        $setter    = $return->getSetter();
+
+        $this->assertEquals( $names.'A', $construct[0]['id'] );
+        $this->assertEquals( $names.'B', $construct[1]['id'] );
+        $this->assertEquals( $names.'C', $properties['propC'] );
+        $this->assertEquals( $names.'CC', $setter['setC'][0]['id'] );
+        $this->assertEquals( null, $return->getScope() );
+        $this->assertEquals( 'a', $construct[0]['name'] );
+        $this->assertEquals( 'b', $construct[1]['name'] );
+        $this->assertEquals( 'c', $setter['setC'][0]['name'] );
     }
 }
