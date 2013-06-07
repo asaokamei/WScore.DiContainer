@@ -23,6 +23,6 @@ class IdWithNamespace extends StorageAbstract
     public function fetch( $name, $namespace = null )
     {
         $id = $this->named( $name, $namespace );
-        return array_key_exists( $id, $this->cache ) ? $this->cache[ $id ] : false;
+        return array_key_exists( $id, $this->cache ) ? $this->cache[ $id ] : null;
     }
 }

@@ -21,6 +21,6 @@ class IdOnly extends StorageAbstract
      */
     public function fetch( $name, $namespace = null )
     {
-        return array_key_exists( $name, $this->cache ) ? $this->cache[ $name ] : false;
+        return array_key_exists( $name, $this->cache ) ? $this->cache[ $name ] : null;
     }
 }

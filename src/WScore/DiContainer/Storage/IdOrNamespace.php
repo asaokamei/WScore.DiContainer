@@ -29,6 +29,6 @@ class IdOrNamespace extends StorageAbstract
             }
         }
         $id = $name;
-        return array_key_exists( $id, $this->cache ) ? $this->cache[ $id ] : false;
+        return array_key_exists( $id, $this->cache ) ? $this->cache[ $id ] : null;
     }
 }
