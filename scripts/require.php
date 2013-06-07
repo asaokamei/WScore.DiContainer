@@ -10,7 +10,6 @@ require( __DIR__ . '/../src/WScore/DiContainer/Forge/Parser.php' );
 require( __DIR__ . '/../src/WScore/DiContainer/Forge/Analyzer.php' );
 require( __DIR__ . '/../src/WScore/DiContainer/Forge/Option.php' );
 require( __DIR__ . '/../src/WScore/DiContainer/Forge/Forger.php' );
-require( __DIR__ . '/../src/WScore/DiContainer/Values.php' );
 require( __DIR__ . '/../src/WScore/DiContainer/Storage/StorageInterface.php' );
 require( __DIR__ . '/../src/WScore/DiContainer/Storage/StorageAbstract.php' );
 require( __DIR__ . '/../src/WScore/DiContainer/Storage/IdOnly.php' );
