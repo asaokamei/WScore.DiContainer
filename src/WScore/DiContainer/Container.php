@@ -78,7 +78,7 @@ class Container implements ContainerInterface
     public function singleton() 
     {
         if( $this->lastId ) {
-            $option = $this->getOption( $this->lastId );
+            $option = $this->getValue( $this->lastId );
             if( is_object( $option ) && $option instanceof Option ) {
                 $option->setSingleton();
             }
@@ -90,7 +90,7 @@ class Container implements ContainerInterface
      * @param $id
      * @return mixed|null|Option
      */
-    public function getOption( $id )
+    public function getValue( $id )
     {
         $id = Utils::normalizeClassName( $id );
         if( $option = $this->values->fetch( $id, $this->namespace ) ) {
@@ -143,7 +143,7 @@ class Container implements ContainerInterface
             return $found;
         }
         $found  = null;
-        $found  = $this->values->fetch( $id, $this->namespace );
+        $found  = $this->getValue( $id );
         // check if $found is a closure, or a className to construct.
         if( is_callable( $found ) ) {
             $found = $found( $this );
