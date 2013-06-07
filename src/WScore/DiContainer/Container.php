@@ -35,15 +35,37 @@ class Container implements ContainerInterface
      * @param \WScore\DiContainer\Storage\IdOrNamespace $values
      * @param \WScore\DiContainer\Forge\Forger $forger
      * @param \WScore\DiContainer\Storage\IdOnly  $singles
+     * @param \WScore\DiContainer\Storage\IdWithNamespace  $shared
      */
-    public function __construct( $values, $forger, $singles=null )
+    public function __construct( $values, $forger, $singles=null, $shared=null )
     {
         $this->values = $values;
         $this->forger = $forger;
         if( !$singles ) {
             $singles = new Storage\IdOnly();
         }
-        $this->scopes[ 'singleton' ] = $singles;
+        if( !$shared ) {
+            $shared = new Storage\IdWithNamespace();
+        }
+        $this->setScope( 'singleton', $singles );
+        $this->setScope( 'shared',    $shared );
+    }
+
+    /**
+     * @param string           $scope
+     * @param StorageInterface $storage
+     */
+    public function setScope( $scope, $storage ) {
+        $this->scopes[ $scope ] = $storage;
+    }
+
+    /**
+     * @param string $scope
+     */
+    public function clearScope( $scope ) {
+        if( isset( $this->scopes[ $scope ] ) ) {
+            $this->scopes[ $scope ]->clear();
+        }
     }
 
     /**
