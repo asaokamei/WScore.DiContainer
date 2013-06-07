@@ -54,4 +54,23 @@ class IdWithNamespace_Test extends \PHPUnit_Framework_TestCase
         $this->assertEquals( null,     $this->values->fetch( 'name' ) );
         $this->assertEquals( 'only',   $this->values->fetch( 'name', 'named' ) );
     }
+
+    function test_exists()
+    {
+        $this->values->store( 'only', 'normal' );
+
+        $this->assertTrue(  $this->values->exists( 'only' ) );
+        $this->assertFalse( $this->values->exists( 'only', 'named' ) );
+        $this->assertFalse( $this->values->exists( 'none' ) );
+    }
+
+    function test_exists_with_namespace()
+    {
+        $this->values->store( 'only', 'normal', 'named' );
+
+        $this->assertFalse( $this->values->exists( 'only' ) );
+        $this->assertTrue(  $this->values->exists( 'only', 'named' ) );
+        $this->assertFalse( $this->values->exists( 'only', 'nope' ) );
+        $this->assertFalse( $this->values->exists( 'none' ) );
+    }
 }

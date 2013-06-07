@@ -3,7 +3,13 @@ namespace WScore\DiContainer\Storage;
 
 interface StorageInterface
 {
-
+    /**
+     * @param string       $name
+     * @param null|string  $namespace
+     * @return bool
+     */
+    public function exists( $name, $namespace=null );
+    
     /**
      * @param string      $name
      * @param mixed       $value
