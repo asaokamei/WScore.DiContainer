@@ -93,6 +93,9 @@ class Analyzer
         if( isset( $dimClass[ 'singleton' ] ) && $dimClass[ 'singleton' ] ) {
             $option->setSingleton();
         }
+        if( isset( $dimClass[ 'scope' ] ) && $dimClass[ 'scope' ] ) {
+            $option->setScope( $dimClass[ 'scope' ] );
+        }
         if( isset( $dimClass[ 'cacheable' ] ) && $dimClass[ 'cacheable' ] ) {
             $option->setCacheAble();
         }

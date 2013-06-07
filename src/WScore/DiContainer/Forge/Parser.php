@@ -19,6 +19,9 @@ class Parser
         if( preg_match( '/@namespace[\s]+([-_\w]+)/mi', $comment, $matches ) ) {
             $injectList[ 'namespace' ] = $matches[1];
         }
+        if( preg_match( '/@scope[\s]+([-_\w]+)/mi', $comment, $matches ) ) {
+            $injectList[ 'scope' ] = $matches[1];
+        }
         if( preg_match( '/@singleton/mi', $comment ) ) {
             $injectList[ 'singleton' ] = true;
             return $injectList;

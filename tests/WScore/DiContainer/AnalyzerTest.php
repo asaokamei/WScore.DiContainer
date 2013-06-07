@@ -83,4 +83,13 @@ class AnalyzerTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals( 'b', $construct[1]['name'] );
         $this->assertEquals( 'c', $setter['setC'][0]['name'] );
     }
+    
+    function test_shared()
+    {
+        $names = '\WScore\tests\DiContainer\MockClass\\';
+        $class = $names . 'Shared';
+        $return = $this->analyzer->analyze( $class );
+
+        $this->assertEquals( 'shared', $return->getScope() );
+    }
 }
