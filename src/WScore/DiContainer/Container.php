@@ -55,8 +55,9 @@ class Container implements ContainerInterface
      */
     public function set( $id, $value=null ) 
     {
+        $numArgs = func_num_args();
         $id = Utils::normalizeClassName( $id );
-        if( is_null( $value ) ) {
+        if( $numArgs === 1 ) {
             if( Utils::isClassName( $id ) ) {
                 $value = new Option( $id );
             }
@@ -93,8 +94,8 @@ class Container implements ContainerInterface
     public function getValue( $id )
     {
         $id = Utils::normalizeClassName( $id );
-        if( $option = $this->values->fetch( $id, $this->namespace ) ) {
-            return $option;
+        if( $this->values->exists( $id, $this->namespace ) ) {
+            return $this->values->fetch( $id, $this->namespace );
         }
         if( Utils::isClassName( $id ) ) {
             return new Option( $id );

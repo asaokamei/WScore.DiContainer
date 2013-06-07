@@ -195,4 +195,16 @@ class ContainerTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals( $names . 'N', '\\' . get_class( $n ) );
         $this->assertEquals( $names . 'A', '\\' . get_class( $n->a ) );
     }
+    
+    function test_setting_null()
+    {
+        $names = '\WScore\tests\DiContainer\MockClass\\';
+        $class = $names . 'A';
+
+        $this->container->set( $class, null );
+        $a = $this->container->get( $class );
+
+        $this->assertEquals( null, $a );
+
+    }
 }
