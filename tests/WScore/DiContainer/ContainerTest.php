@@ -76,23 +76,12 @@ class ContainerTest extends \PHPUnit_Framework_TestCase
         $names = '\WScore\tests\DiContainer\MockClass\\';
         // get non-singleton objects
         $class = $names . 'A';
-        $object1 = $this->container->get( $class, array( 'singleton' ) );
+        $this->container->set( $class )->singleton();
+        $object1 = $this->container->get( $class );
         $object2 = $this->container->get( $class );
         $this->assertEquals( $class, '\\' . get_class( $object1 ) );
         $this->assertSame( $object1, $object2 );
         
-    }
-
-    function test_singleton_option2()
-    {
-        $names = '\WScore\tests\DiContainer\MockClass\\';
-        // get non-singleton objects
-        $class = $names . 'A';
-        $object1 = $this->container->get( $class, array( 'singleton' => true ) );
-        $object2 = $this->container->get( $class );
-        $this->assertEquals( $class, '\\' . get_class( $object1 ) );
-        $this->assertSame( $object1, $object2 );
-
     }
     
     function test_nonexistence_id_returns_null()
@@ -127,29 +116,19 @@ class ContainerTest extends \PHPUnit_Framework_TestCase
         $names = 'WScore\tests\DiContainer\MockClass\\';
         // get non-singleton objects
         $class = $names . 'A';
-        $object1 = $this->container->get( $class, array( 'singleton' => true ) );
+        $this->container->set( $class )->singleton();
+        $object1 = $this->container->get( $class );
         $object2 = $this->container->get( '\\' . $class );
         $this->assertEquals( $class, get_class( $object1 ) );
         $this->assertSame( $object1, $object2 );
     }
 
-    function test_class_with_or_wo_slashes2()
-    {
-        $names = 'WScore\tests\DiContainer\MockClass\\';
-        // get non-singleton objects
-        $class = $names . 'A';
-        $object1 = $this->container->get( '\\' . $class, array( 'singleton' => true ) );
-        $object2 = $this->container->get( $class );
-        $this->assertEquals( $class, get_class( $object1 ) );
-        $this->assertSame( $object1, $object2 );
-    }
-    
     function test_singleton_method()
     {
         $names = '\WScore\tests\DiContainer\MockClass\\';
         // get non-singleton objects
         $class = $names . 'A';
-        $this->container->singleton( $class, $class );
+        $this->container->set( $class )->singleton();
         $object1 = $this->container->get( $class );
         $object2 = $this->container->get( $class );
         $this->assertEquals( $class, '\\' . get_class( $object1 ) );
@@ -161,7 +140,7 @@ class ContainerTest extends \PHPUnit_Framework_TestCase
     {
         $object = new \stdClass();
         $object->test = 'set object test';
-        $this->container->singleton( 'single', $object );
+        $this->container->set( 'single', $object );
         $object1 = $this->container->get( 'single' );
         $object2 = $this->container->get( 'single' );
         $this->assertEquals( 'stdClass', get_class( $object1 ) );
