@@ -2,6 +2,7 @@
 namespace WScore\DiContainer;
 
 use WScore\DiContainer\Forge\Option;
+use WScore\DiContainer\Storage\StorageInterface;
 use WScore\DiContainer\Utils;
 
 class Container implements ContainerInterface
@@ -17,9 +18,9 @@ class Container implements ContainerInterface
     private $values = null;
 
     /**
-     * @var \WScore\DiContainer\Storage\IdOnly
+     * @var StorageInterface[]
      */
-    private $singletons;
+    private $scopes = array();
     
     /** 
      * namespace for object construction. 
@@ -39,11 +40,10 @@ class Container implements ContainerInterface
     {
         $this->values = $values;
         $this->forger = $forger;
-        if( $singles ) {
-            $this->singletons = $singles;
-        } else {
-            $this->singletons = new Storage\IdOnly();
+        if( !$singles ) {
+            $singles = new Storage\IdOnly();
         }
+        $this->scopes[ 'singleton' ] = $singles;
     }
 
     /**
@@ -125,37 +125,53 @@ class Container implements ContainerInterface
     public function get( $id )
     {
         $id = Utils::normalizeClassName( $id );
-        if( $found = $this->singletons->fetch( $id ) ) {
+        $found = $this->getFromScope( $id );
+        if( $found !== null ) {
             return $found;
         }
-        $found  = null;
         $found  = $this->getValue( $id );
         // check if $found is a closure, or a className to construct.
         if( is_callable( $found ) ) {
             $found = $found( $this );
         }
         elseif( is_object( $found ) && $found instanceof Option ) {
-            $found = $this->forge( $id, $found );
+            // it's a class. prepare options to construct an object.
+            $object  = $this->forger->forge( $this, $found );
+            $this->setToScope( $id, $object, $found->getScope() );
+            return $object;
         }
         return $found;
     }
 
     /**
      * @param string $id
-     * @param Option $option
-     * @return mixed|void
+     * @param string $namespace
+     * @return mixed|null
      */
-    private function forge( $id, $option )
+    private function getFromScope( $id )
     {
-        // it's a class. prepare options to construct an object.
-        $found  = $this->forger->forge( $this, $option );
-        // singleton: set singleton option to true.
-        if( $option->getScope() === 'singleton' ) {
-            $this->singletons->store( $id, $found );
+        foreach( $this->scopes as $scope ) {
+            /** @var $scope StorageInterface */
+            if( $scope->exists( $id, $this->namespace ) ) {
+                return $scope->fetch( $id, $this->namespace );
+            }
         }
-        return $found;
+        return null;
     }
 
+    /**
+     * @param string $id
+     * @param mixed  $value
+     * @param string $namespace
+     * @param string $scope
+     */
+    private function setToScope( $id, $value, $scope )
+    {
+        if( isset( $this->scopes[ $scope ] ) ) {
+            $this->scopes[ $scope ]->store( $id, $value, $this->namespace );
+        }
+    }
+    
     /**
      * @return null|string
      */
