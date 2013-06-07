@@ -19,19 +19,32 @@ class ParserTest extends \PHPUnit_Framework_TestCase
     function test_singleton_parsing() {
         $comment = "
         /**
-         * This comment should return only singleton.
+         * This comment should return singleton scope.
          * @Singleton
-         * @Inject
          * @var    variableVar
          * @param  variableParam
          */
         ";
         $return = $this->parser->parse( $comment );
         $this->assertNotEmpty( $return );
-        $this->assertTrue( $return[ 'singleton' ] );
-        unset( $return['singleton' ] );
+        $this->assertTrue( $return[ 'scope' ] === 'singleton' );
+    }
+    function test_scope_parsing() {
+        $comment = "
+        /**
+         * This comment should return only singleton.
+         * @scope testScope
+         * @var    variableVar
+         * @param  variableParam
+         */
+        ";
+        $return = $this->parser->parse( $comment );
+        $this->assertNotEmpty( $return );
+        $this->assertTrue( $return[ 'scope' ] === 'testScope' );
+        unset( $return['scope' ] );
         $this->assertEmpty( $return );
     }
+
     /**
      *
      */
@@ -91,6 +104,34 @@ class ParserTest extends \PHPUnit_Framework_TestCase
         /**
          * @Inject
          * @no parameter
+         */
+        ";
+        $return = $this->parser->parse( $comment );
+        $this->assertEmpty( $return );
+    }
+
+    /**
+     *
+     */
+    function test_wrong_param() {
+        $comment = "
+        /**
+         * @Inject
+         * @param this_id_is 
+         */
+        ";
+        $return = $this->parser->parse( $comment );
+        $this->assertEmpty( $return );
+    }
+
+    /**
+     *
+     */
+    function test_wrong_var() {
+        $comment = "
+        /**
+         * @Inject
+         * @var  
          */
         ";
         $return = $this->parser->parse( $comment );

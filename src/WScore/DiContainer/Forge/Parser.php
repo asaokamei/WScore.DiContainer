@@ -23,8 +23,7 @@ class Parser
             $injectList[ 'scope' ] = $matches[1];
         }
         if( preg_match( '/@singleton/mi', $comment ) ) {
-            $injectList[ 'singleton' ] = true;
-            return $injectList;
+            $injectList[ 'scope' ] = 'singleton';
         }
         if( preg_match( '/@cacheable/mi', $comment ) ) {
             $injectList[ 'cacheable' ] = true;
@@ -35,11 +34,14 @@ class Parser
         foreach( $comments[1] as $parameter ) 
         {
             if( preg_match( '/@param/i', $parameter, $matches ) ) {
-                $list = $this->parseParam( $parameter );
-                $injectList[ $list['var'] ] = $list[ 'id' ];
+                if( $list = $this->parseParam( $parameter ) ) {
+                    $injectList[ $list['var'] ] = $list[ 'id' ];
+                }
             }
             elseif( preg_match( '/@var/i', $parameter, $matches ) ) {
-                $injectList[0] = $this->parseVar( $parameter );
+                if( $list = $this->parseVar( $parameter ) ) {
+                    $injectList[0] = $list;
+                }
             }
         }
         return $injectList;
@@ -53,7 +55,9 @@ class Parser
      */
     protected function parseVar( $parameter )
     {
+        $parameter = trim( $parameter );
         $list = preg_split( '/[\s]+/', $parameter );
+        if( count( $list ) < 2 ) return array();
         return array(
             'id'  => $list[1],
         );
@@ -67,7 +71,9 @@ class Parser
      */
     protected function parseParam( $parameter )
     {
+        $parameter = trim( $parameter );
         $list = preg_split( '/[\s]+/', $parameter );
+        if( count( $list ) < 3 ) return array();
         if( substr( $list[2], 0, 1 ) === '$' ) $list[2] = substr( $list[2], 1 );
         return array(
             'id'  => $list[1],

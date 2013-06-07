@@ -90,9 +90,6 @@ class Analyzer
         if( isset( $dimClass[ 'namespace' ] ) ) {
             $option->setNameSpace( $dimClass[ 'namespace' ] );
         }
-        if( isset( $dimClass[ 'singleton' ] ) && $dimClass[ 'singleton' ] ) {
-            $option->setSingleton();
-        }
         if( isset( $dimClass[ 'scope' ] ) && $dimClass[ 'scope' ] ) {
             $option->setScope( $dimClass[ 'scope' ] );
         }
