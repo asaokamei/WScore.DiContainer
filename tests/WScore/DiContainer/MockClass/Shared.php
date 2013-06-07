@@ -1,7 +1,14 @@
 <?php
 namespace WScore\tests\DiContainer\MockClass;
 
-class Named
+/**
+ * Class Shared
+ *
+ * @package WScore\tests\DiContainer\MockClass
+ * 
+ * @scope shared
+ */
+class Shared
 {
     /**
      * @Inject
