@@ -12,7 +12,7 @@ class Container implements ContainerInterface
     private $forger;
 
     /**
-     * @var \WScore\DiContainer\Values
+     * @var \WScore\DiContainer\Storage\IdOrNamespace
      */
     private $values = null;
 
@@ -102,21 +102,6 @@ class Container implements ContainerInterface
         return null;
     }
     
-    /**
-     * Sets an option for forging an object for the $id service.
-     *
-     * @param string $id
-     * @param array  $option
-     * @param bool   $reset
-     * @return $this
-     */
-    public function setOption( $id, $option, $reset=false )
-    {
-        $id = Utils::normalizeClassName( $id );
-        $option = $this->values->fetch( $id, $this->namespace );
-        return $this;
-    }
-
     /**
      * Checks if a value is set for the $id.
      *
