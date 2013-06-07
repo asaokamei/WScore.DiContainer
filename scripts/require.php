@@ -14,4 +14,5 @@ require( __DIR__ . '/../src/WScore/DiContainer/Values.php' );
 require( __DIR__ . '/../src/WScore/DiContainer/Storage/StorageInterface.php' );
 require( __DIR__ . '/../src/WScore/DiContainer/Storage/StorageAbstract.php' );
 require( __DIR__ . '/../src/WScore/DiContainer/Storage/IdOnly.php' );
+require( __DIR__ . '/../src/WScore/DiContainer/Storage/IdOrNamespace.php' );
 require( __DIR__ . '/../src/WScore/DiContainer/Container.php' );

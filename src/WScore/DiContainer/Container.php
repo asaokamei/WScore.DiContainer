@@ -31,7 +31,7 @@ class Container implements ContainerInterface
     public $lastId = null;
 
     /**
-     * @param \WScore\DiContainer\Values $values
+     * @param \WScore\DiContainer\Storage\IdOrNamespace $values
      * @param \WScore\DiContainer\Forge\Forger $forger
      * @param \WScore\DiContainer\Storage\IdOnly  $singles
      */
@@ -65,7 +65,7 @@ class Container implements ContainerInterface
                 $value = new Option( $value );
             }
         }
-        $this->values->set( $id, $value, $this->namespace );
+        $this->values->store( $id, $value, $this->namespace );
         $this->lastId = $id;
         return $this;
     }
@@ -93,7 +93,7 @@ class Container implements ContainerInterface
     public function getOption( $id )
     {
         $id = Utils::normalizeClassName( $id );
-        if( $option = $this->values->get( $id, $this->namespace ) ) {
+        if( $option = $this->values->fetch( $id, $this->namespace ) ) {
             return $option;
         }
         if( Utils::isClassName( $id ) ) {
@@ -113,7 +113,7 @@ class Container implements ContainerInterface
     public function setOption( $id, $option, $reset=false )
     {
         $id = Utils::normalizeClassName( $id );
-        $this->values->setOption( $id, $option, $reset, $this->namespace );
+        $option = $this->values->fetch( $id, $this->namespace );
         return $this;
     }
 
@@ -126,7 +126,7 @@ class Container implements ContainerInterface
     public function has( $id ) 
     {
         $id = Utils::normalizeClassName( $id );
-        return $this->values->get( $id, $this->namespace ) ? true: false;
+        return $this->values->fetch( $id, $this->namespace ) ? true: false;
     }
 
     /**
@@ -143,7 +143,7 @@ class Container implements ContainerInterface
             return $found;
         }
         $found  = null;
-        $found  = $this->values->get( $id, $this->namespace );
+        $found  = $this->values->fetch( $id, $this->namespace );
         // check if $found is a closure, or a className to construct.
         if( is_callable( $found ) ) {
             $found = $found( $this );
