@@ -89,22 +89,51 @@ class Container implements ContainerInterface
             }
         }
         $this->values->store( $id, $value, $this->namespace );
+        return $this->id( $id );
+    }
+
+    /**
+     * @param $id
+     * @return $this
+     */
+    public function id( $id ) {
         $this->lastId = $id;
         return $this;
     }
 
     /**
-     * sets a service value as singleton for $id. 
-     * 
-     * @return $this
+     * @return bool|Option
      */
-    public function singleton() 
+    private function getLastOption() 
     {
         if( $this->lastId ) {
             $option = $this->getValue( $this->lastId );
             if( is_object( $option ) && $option instanceof Option ) {
-                $option->setSingleton();
+                return $option;
             }
+        }
+        return false;
+    }
+    
+    /**
+     * sets a service value as singleton for $id. 
+     * 
+     * @return $this
+     */
+    public function singleton() {
+        if( $option = $this->getLastOption() ) {
+            $option->setSingleton();
+        }
+        return $this;
+    }
+
+    /**
+     * @param string $scope
+     * @return $this
+     */
+    public function scope( $scope ) {
+        if( $option = $this->getLastOption() ) {
+            $option->setScope( $scope );
         }
         return $this;
     }
