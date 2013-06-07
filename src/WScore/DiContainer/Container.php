@@ -145,7 +145,6 @@ class Container implements ContainerInterface
 
     /**
      * @param string $id
-     * @param string $namespace
      * @return mixed|null
      */
     private function getFromScope( $id )
@@ -162,7 +161,6 @@ class Container implements ContainerInterface
     /**
      * @param string $id
      * @param mixed  $value
-     * @param string $namespace
      * @param string $scope
      */
     private function setToScope( $id, $value, $scope )
