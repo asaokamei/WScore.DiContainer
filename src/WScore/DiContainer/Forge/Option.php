@@ -16,7 +16,7 @@ class Option
     /**
      * @var bool
      */
-    protected $cacheAble = false;
+    protected $cacheAble = null;
     
     /**
      * @var null|string
@@ -221,13 +221,23 @@ class Option
     public function merge( $option )
     {
         if( !$option ) return;
+        // check class name are the same. 
         if( $this->className !== $option->getClass() ) {
             $message = sprintf( 'class not match: %s and %s', $this->className, $option->getClass() );
             throw new \RuntimeException( $message );
         }
-        $this->setNameSpace( $option->getNameSpace() );
-        $this->setScope(     $option->getScope() );
-        $this->setCacheAble( $option->getCacheAble() );
+        // overwrite namespace
+        if( $option->getNameSpace() ) {
+            $this->setNameSpace( $option->getNameSpace() );
+        }
+        // overwrite scope
+        if( $option->getScope() ) {
+            $this->setScope(     $option->getScope() );
+        }
+        // overwrite cache-able 
+        if( $option->getCacheAble() !== null ) {
+            $this->setCacheAble( $option->getCacheAble() );
+        }
         // constructor
         if( $construct = $option->getConstructor() ) {
             foreach( $construct as $arg ) {
