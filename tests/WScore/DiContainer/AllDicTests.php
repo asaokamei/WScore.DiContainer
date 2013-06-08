@@ -18,6 +18,7 @@ class AllDicTests
         $suite->addTestFile( $folder . 'ForgerTest.php' );
         $suite->addTestFile( $folder . 'Forger_CachedTest.php' );
         $suite->addTestFile( $folder . 'ContainerTest.php' );
+        $suite->addTestFile( $folder . 'Namespace_Test.php' );
 
         return $suite;
     }
