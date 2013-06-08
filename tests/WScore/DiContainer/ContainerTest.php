@@ -1,9 +1,6 @@
 <?php
 namespace WScore\tests\DiContainer;
 
-use \WScore\DiContainer\Parser;
-use \WScore\DiContainer\Analyzer;
-use \WScore\DiContainer\Forger;
 use \WScore\DiContainer\Container;
 
 class ContainerTest extends \PHPUnit_Framework_TestCase
@@ -216,6 +213,30 @@ class ContainerTest extends \PHPUnit_Framework_TestCase
         $this->container->setNamespace( 'myTest' );
         $this->container->set( $class )->scope( 'shared' );
         
+        $object1 = $this->container->get( $class );
+        $this->assertEquals( $names . 'A', '\\' . get_class( $object1 ) );
+
+        $this->container->setNamespace();
+        $object2 = $this->container->get( $class );
+        $this->assertEquals( $names . 'A', '\\' . get_class( $object2 ) );
+
+        $this->container->setNamespace( 'myTest' );
+        $object3 = $this->container->get( $class );
+        $this->assertEquals( $names . 'A', '\\' . get_class( $object3 ) );
+
+        $this->assertSame(    $object1, $object3 );
+        $this->assertNotSame( $object1, $object2 );
+        $this->assertNotSame( $object2, $object3 );
+    }
+
+    function test_shared_with_namespace()
+    {
+        $names = '\WScore\tests\DiContainer\MockClass\\';
+        $class = $names . 'A';
+
+        $this->container->set( $class )->scope( 'shared' )->resetNamespace( 'myTest' );
+
+        $this->container->setNamespace( 'myTest' );
         $object1 = $this->container->get( $class );
         $this->assertEquals( $names . 'A', '\\' . get_class( $object1 ) );
 
