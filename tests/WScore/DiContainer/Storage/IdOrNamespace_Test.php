@@ -73,4 +73,17 @@ class IdOrNamespace_Test extends \PHPUnit_Framework_TestCase
         $this->assertFalse( $this->values->exists( 'only', 'nope' ) );
         $this->assertFalse( $this->values->exists( 'none' ) );
     }
+    
+    function test_reset_namespace()
+    {
+        $this->values->store( 'id', 'value', 'from' );
+        $this->assertTrue(  $this->values->exists( 'id', 'from' ) );
+        $this->assertFalse( $this->values->exists( 'id', 'to' ) );
+
+        $this->values->resetNamespace( 'id', 'from', 'to' );
+        $this->assertFalse( $this->values->exists( 'id', 'from' ) );
+        $this->assertTrue(  $this->values->exists( 'id', 'to' ) );
+        
+        $this->assertEquals( 'value', $this->values->fetch( 'id', 'to' ) );
+    }
 }

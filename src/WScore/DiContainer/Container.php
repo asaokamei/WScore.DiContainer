@@ -28,8 +28,13 @@ class Container implements ContainerInterface
      * @var null|string 
      */
     public $namespace = null;
-    
-    public $lastId = null;
+
+    /**
+     * keeps last used id as [ 0 => $id, 1 => $namespace ].
+     * 
+     * @var array
+     */
+    public $lastId = array();
 
     /**
      * @param \WScore\DiContainer\Storage\IdOrNamespace $values
@@ -97,7 +102,7 @@ class Container implements ContainerInterface
      * @return $this
      */
     public function id( $id ) {
-        $this->lastId = $id;
+        $this->lastId = array( $id, $this->namespace );
         return $this;
     }
 
@@ -107,7 +112,7 @@ class Container implements ContainerInterface
     private function getLastOption() 
     {
         if( $this->lastId ) {
-            $option = $this->getValue( $this->lastId );
+            $option = $this->getValue( $this->lastId[0], $this->lastId[1] );
             if( is_object( $option ) && $option instanceof Option ) {
                 return $option;
             }
@@ -136,14 +141,26 @@ class Container implements ContainerInterface
     }
 
     /**
-     * @param $id
+     * @param string $namespace
+     * @return $this
+     */
+    public function resetNamespace( $namespace ) {
+        $this->values->resetNamespace( $this->lastId[0], $this->lastId[1], $namespace );
+        $this->lastId[1] = $namespace;
+        return $this;
+    }
+
+    /**
+     * @param string       $id
+     * @param null|string  $namespace
      * @return mixed|null|Option
      */
-    public function getValue( $id )
+    public function getValue( $id, $namespace=null )
     {
+        if( !$namespace ) $namespace = $this->namespace;
         $id = Utils::normalizeClassName( $id );
-        if( $this->values->exists( $id, $this->namespace ) ) {
-            return $this->values->fetch( $id, $this->namespace );
+        if( $this->values->exists( $id, $namespace ) ) {
+            return $this->values->fetch( $id, $namespace );
         }
         if( Utils::isClassName( $id ) ) {
             return new Option( $id );

@@ -30,4 +30,12 @@ interface StorageInterface
      * clears the contents.
      */
     public function clear();
+
+
+    /**
+     * @param string $id
+     * @param string $name1
+     * @param string $name2
+     */
+    public function resetNamespace( $id, $name1, $name2 );
 }
