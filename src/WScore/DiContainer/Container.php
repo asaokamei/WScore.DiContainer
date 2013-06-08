@@ -121,10 +121,7 @@ class Container implements ContainerInterface
      * @return $this
      */
     public function singleton() {
-        if( $option = $this->getLastOption() ) {
-            $option->setSingleton();
-        }
-        return $this;
+        return $this->scope( 'singleton' );
     }
 
     /**
