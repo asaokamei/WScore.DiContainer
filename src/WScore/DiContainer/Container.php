@@ -145,8 +145,11 @@ class Container implements ContainerInterface
      * @return $this
      */
     public function resetNamespace( $namespace ) {
-        $this->values->resetNamespace( $this->lastId[0], $this->lastId[1], $namespace );
-        $this->lastId[1] = $namespace;
+        if( $option = $this->getLastOption() ) {
+            $option->setNameSpace( $namespace );
+            $this->values->resetNamespace( $this->lastId[0], $this->lastId[1], $namespace );
+            $this->lastId[1] = $namespace;
+        }
         return $this;
     }
 
@@ -202,7 +205,7 @@ class Container implements ContainerInterface
         elseif( is_object( $found ) && $found instanceof Option ) {
             // it's a class. prepare options to construct an object.
             $object  = $this->forger->forge( $this, $found );
-            $this->setToScope( $id, $object, $found->getScope() );
+            $this->setToScope( $id, $object, $found->getScope(), $found->getNameSpace() );
             return $object;
         }
         return $found;
@@ -227,11 +230,13 @@ class Container implements ContainerInterface
      * @param string $id
      * @param mixed  $value
      * @param string $scope
+     * @param string $namespace
      */
-    private function setToScope( $id, $value, $scope )
+    private function setToScope( $id, $value, $scope, $namespace )
     {
+        if( !$namespace ) $namespace = $this->namespace;
         if( isset( $this->scopes[ $scope ] ) ) {
-            $this->scopes[ $scope ]->store( $id, $value, $this->namespace );
+            $this->scopes[ $scope ]->store( $id, $value, $namespace );
         }
     }
     
