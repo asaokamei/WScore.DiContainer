@@ -36,6 +36,9 @@ class Container implements ContainerInterface
      */
     public $lastId = array();
 
+    // +----------------------------------------------------------------------+
+    //  construction and managing its state (scope and namespace)
+    // +----------------------------------------------------------------------+
     /**
      * @param \WScore\DiContainer\Storage\IdOrNamespace $values
      * @param \WScore\DiContainer\Forge\Forger $forger
@@ -73,6 +76,23 @@ class Container implements ContainerInterface
         }
     }
 
+    /**
+     * @return null|string
+     */
+    public function getNamespace() {
+        return $this->namespace;
+    }
+
+    /**
+     * @param null|string $namespace
+     */
+    public function setNamespace( $namespace=null ) {
+        $this->namespace = $namespace;
+    }
+
+    // +----------------------------------------------------------------------+
+    //  managing values
+    // +----------------------------------------------------------------------+
     /**
      * Sets a service value for the $id.
      *
@@ -184,6 +204,9 @@ class Container implements ContainerInterface
         return $this->values->fetch( $id, $this->namespace ) ? true: false;
     }
 
+    // +----------------------------------------------------------------------+
+    //  get/forge values
+    // +----------------------------------------------------------------------+
     /**
      * Gets a service for a given $id.
      * Forges an object if the set value or the $id is a class name.
@@ -240,18 +263,5 @@ class Container implements ContainerInterface
             $this->scopes[ $scope ]->store( $id, $value, $namespace );
         }
     }
-    
-    /**
-     * @return null|string
-     */
-    public function getNamespace() {
-        return $this->namespace;
-    }
-
-    /**
-     * @param null|string $namespace
-     */
-    public function setNamespace( $namespace=null ) {
-        $this->namespace = $namespace;
-    }
+    // +----------------------------------------------------------------------+
 }
