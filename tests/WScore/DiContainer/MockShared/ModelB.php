@@ -5,8 +5,6 @@ namespace WScore\tests\DiContainer\MockShared;
  * Class ModelB
  *
  * @package WScore\tests\DiContainer\MockShared
- * 
- * @namespace myTest
  */
 class ModelB
 {

@@ -39,6 +39,7 @@ class Namespace_Test extends \PHPUnit_Framework_TestCase
         $name2  = 'moreTest';
         $this->container->set( 'Connector', 'connect to myTest'   )->resetNamespace( $name1 );
         $this->container->set( 'Connector', 'connect to moreTest' )->resetNamespace( $name2 );
+        $this->container->set( $classB )->inNamespace( $name1 );
         $this->container->set( $query  )->scope( 'shared' );
 
         /** @var \WScore\tests\DiContainer\MockShared\ModelA $objectA */
