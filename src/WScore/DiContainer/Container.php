@@ -165,15 +165,24 @@ class Container implements ContainerInterface
      * @return $this
      */
     public function resetNamespace( $namespace ) {
-        if( !$this->values->exists( $this->lastId[0], $this->namespace ) ) return $this;
-        if( $option = $this->getLastOption() ) {
-            $option->setNameSpace( $namespace );
+        if( $this->values->exists( $this->lastId[0], $this->namespace ) ) {
+            $this->values->resetNamespace( $this->lastId[0], $this->lastId[1], $namespace );
+            $this->lastId[1] = $namespace;
         }
-        $this->values->resetNamespace( $this->lastId[0], $this->lastId[1], $namespace );
-        $this->lastId[1] = $namespace;
         return $this;
     }
 
+    /**
+     * @param $namespace
+     * @return $this
+     */
+    public function inNamespace( $namespace ) {
+        if( $option = $this->getLastOption() ) {
+            $option->setNameSpace( $namespace );
+        }
+        return $this;
+    }
+    
     /**
      * @param string       $id
      * @param null|string  $namespace
