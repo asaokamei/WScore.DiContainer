@@ -161,6 +161,8 @@ class Container implements ContainerInterface
     }
 
     /**
+     * reset an existing definition of value to another namespace.
+     * 
      * @param string $namespace
      * @return $this
      */
@@ -173,12 +175,16 @@ class Container implements ContainerInterface
     }
 
     /**
+     * put object in namespace for class definition, or reset namespace for values. 
+     * 
      * @param $namespace
      * @return $this
      */
     public function inNamespace( $namespace ) {
         if( $option = $this->getLastOption() ) {
             $option->setNameSpace( $namespace );
+        } else {
+            $this->resetNamespace( $namespace );
         }
         return $this;
     }
