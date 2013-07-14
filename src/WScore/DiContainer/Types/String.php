@@ -1,5 +1,5 @@
 <?php
-namespace WScore\DiContainer;
+namespace WScore\DiContainer\Types;
 
 class String
 {
