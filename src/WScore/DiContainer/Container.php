@@ -121,6 +121,14 @@ class Container implements ContainerInterface
      * @param $id
      * @return $this
      */
+    public function load( $id ) {
+        return $this->set( $id, $this->get( $id ) );
+    }
+
+    /**
+     * @param $id
+     * @return $this
+     */
     public function id( $id ) {
         $this->lastId = array( $id, $this->namespace );
         return $this;

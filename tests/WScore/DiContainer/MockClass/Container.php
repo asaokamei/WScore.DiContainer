@@ -31,4 +31,9 @@ class Container implements ContainerInterface
     public function setNamespace( $namespace = null )
     {
     }
+
+    public function load( $id )
+    {
+        return $this->get( $id );
+    }
 }
