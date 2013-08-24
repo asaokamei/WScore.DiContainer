@@ -119,10 +119,12 @@ class Container implements ContainerInterface
 
     /**
      * @param $id
-     * @return $this
+     * @return mixed
      */
     public function load( $id ) {
-        return $this->set( $id, $this->get( $id ) );
+        $got = $this->get( $id );
+        $this->set( $id, $got );
+        return $got;
     }
 
     /**
