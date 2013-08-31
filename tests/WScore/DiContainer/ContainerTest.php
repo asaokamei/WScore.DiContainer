@@ -252,4 +252,24 @@ class ContainerTest extends \PHPUnit_Framework_TestCase
         $this->assertNotSame( $object1, $object2 );
         $this->assertNotSame( $object2, $object3 );
     }
+    
+    function test_set_option()
+    {
+        $names = '\WScore\tests\DiContainer\MockClass\\';
+        $class = $names . 'X';
+        $this->container->set( 'classX', $class );
+        $this->container->option()->setConstructor( 'a', $names.'B' );
+        $this->container->option()->setConstructor( 'b', $names.'A' );
+        $this->container->option()->setProperty( 'propC', $names.'A' );
+        $this->container->option()->setSetter( 'setC', 'c', $names.'B' );
+        
+        $object = $this->container->get( 'classX' );
+        $this->assertEquals( $class, '\\' . get_class( $object ) );
+        $this->assertEquals( $names.'B', '\\' . get_class( $object->a ) );
+        $this->assertEquals( $names.'A', '\\' . get_class( $object->b ) );
+        $this->assertEquals( $names.'A', '\\' . get_class( $object->getPropC() ) );
+        $this->assertEquals( $names.'B', '\\' . get_class( $object->setC ) );
+    }
+
+    
 }

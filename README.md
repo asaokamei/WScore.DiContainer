@@ -90,20 +90,10 @@ The container can overwrite the dependency of any of the injection types: constr
 Specify the option at get,
 
 ```php
-$object = $container->get( 'Sample', array(
-    'construct' => array( 'var'      => 'another\class', ),
-    'setter'    => array( 'setVar3'  => 'setter\class', ),
-    'property'  => array( 'property' => 'property\class', ),
-) );
+$container->option( 'Some\Class' )
+    ->setConstructor( 'var', 'another\class' )
+    ->setSetter( 'setVar3', 'setter\class', )
+    ->setProperty( 'property', 'property\class' );
+$object = $container->get( 'Some\Class );
 ```
 
-or, use setOption.
-
-```php
-$container->setOption( 'Sample', array(
-    'construct' => array( 'var'      => 'another\class', ),
-    'setter'    => array( 'setVar3'  => 'setter\class', ),
-    'property'  => array( 'property' => 'property\class', ),
-) );
-$object = $container->get( 'Sample' );
-```

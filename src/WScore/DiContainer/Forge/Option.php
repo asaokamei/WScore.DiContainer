@@ -139,10 +139,12 @@ class Option
      * @param string       $name
      * @param string       $id
      * @param null|string  $default
+     * @return $this
      */
     public function setConstructor( $name, $id, $default=null ) 
     {
-        $this->construct[] = $this->packMethodInfo( $name, $id, $default );
+        $this->construct[ $name ] = $this->packMethodInfo( $name, $id, $default );
+        return $this;
     }
 
     /**
@@ -160,6 +162,7 @@ class Option
      * @param string       $name
      * @param string       $id
      * @param null|string  $default
+     * @return $this
      */
     public function setSetter( $methodName, $name, $id, $default=null ) 
     {
@@ -167,7 +170,8 @@ class Option
         if( !isset( $this->setter[ $methodName ] ) ) {
             $this->setter[ $methodName ] = array();
         }
-        $this->setter[ $methodName ][] = $info;
+        $this->setter[ $methodName ][ $name ] = $info;
+        return $this;
     }
 
     /**
@@ -195,9 +199,11 @@ class Option
     /**
      * @param string $propertyName
      * @param string $id
+     * @return $this
      */
     public function setProperty( $propertyName, $id ) {
         $this->property[ $propertyName ] = $id;
+        return $this;
     }
 
     /**

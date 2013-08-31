@@ -44,14 +44,14 @@ class AnalyzerTest extends \PHPUnit_Framework_TestCase
         $properties= $return->getProperty();
         $setter    = $return->getSetter();
         
-        $this->assertEquals( $names.'A', $construct[0]['id'] );
-        $this->assertEquals( $names.'B', $construct[1]['id'] );
+        $this->assertEquals( $names.'A', $construct['a']['id'] );
+        $this->assertEquals( $names.'B', $construct['b']['id'] );
         $this->assertEquals( $names.'C', $properties['propC'] );
-        $this->assertEquals( $names.'C', $setter['setC'][0]['id'] );
+        $this->assertEquals( $names.'C', $setter['setC']['c']['id'] );
         $this->assertEquals( 'singleton', $return->getScope() );
-        $this->assertEquals( 'a', $construct[0]['name'] );
-        $this->assertEquals( 'b', $construct[1]['name'] );
-        $this->assertEquals( 'c', $setter['setC'][0]['name'] );
+        $this->assertEquals( 'a', $construct['a']['name'] );
+        $this->assertEquals( 'b', $construct['b']['name'] );
+        $this->assertEquals( 'c', $setter['setC']['c']['name'] );
     }
     function test_ignore_methods_without_inject()
     {
@@ -74,14 +74,14 @@ class AnalyzerTest extends \PHPUnit_Framework_TestCase
         $properties= $return->getProperty();
         $setter    = $return->getSetter();
 
-        $this->assertEquals( $names.'A', $construct[0]['id'] );
-        $this->assertEquals( $names.'B', $construct[1]['id'] );
+        $this->assertEquals( $names.'A', $construct['a']['id'] );
+        $this->assertEquals( $names.'B', $construct['b']['id'] );
         $this->assertEquals( $names.'C', $properties['propC'] );
-        $this->assertEquals( $names.'CC', $setter['setC'][0]['id'] );
+        $this->assertEquals( $names.'CC', $setter['setC']['c']['id'] );
         $this->assertEquals( null, $return->getScope() );
-        $this->assertEquals( 'a', $construct[0]['name'] );
-        $this->assertEquals( 'b', $construct[1]['name'] );
-        $this->assertEquals( 'c', $setter['setC'][0]['name'] );
+        $this->assertEquals( 'a', $construct['a']['name'] );
+        $this->assertEquals( 'b', $construct['b']['name'] );
+        $this->assertEquals( 'c', $setter['setC']['c']['name'] );
     }
     
     function test_shared()

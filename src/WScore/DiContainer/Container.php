@@ -137,6 +137,15 @@ class Container implements ContainerInterface
     }
 
     /**
+     * @param null $id
+     * @return bool|Option
+     */
+    public function option( $id=null ) {
+        if( $id ) $this->id( $id );
+        return $this->getLastOption();
+    }
+
+    /**
      * @return bool|Option
      */
     private function getLastOption() 

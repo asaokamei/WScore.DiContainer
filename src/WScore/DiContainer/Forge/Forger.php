@@ -178,11 +178,9 @@ class Forger
         foreach( $list as $idx => $info ) {
             
             // $idx as number is for injection. 
-            if( !is_numeric( $idx ) ) continue;
             $name = $info[ 'name' ];
             // overwrite $id if set in $list. 
-            $id = isset( $list[ $name ] ) ? $list[ $name ] : $info[ 'id' ];
-            $val = $container->get( $id );
+            $val = $container->get( $info[ 'id' ] );
             $args[] = is_null( $val ) ? $info[ 'default' ] : $val ;
         }
         call_user_func_array( array( $object, $methodName ), $args );
